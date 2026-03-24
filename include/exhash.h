@@ -1,45 +1,36 @@
 #ifndef EXHASH_H
 #define EXHASH_H
 
-#include <stddef.h>
+#include <stdint.h>
 
 typedef struct exhash_t exhash_t;
 
-/** @brief    Inicialização da estrutura de Extendible Hashing.
+/** @brief    Inicialização de um arquivo e estrutura de extendible hashing.
  *
- * @param    bucket_size  Capacidade máxima de itens em cada bucket.
+ * @param    bucket_size  Capacidade máxima de registros em cada bucket.
+ * @param    data_size    Tamanho dos dados a serem armazenados em cada registro de um bucket.
+ * @param    path         Caminho do arquivo para armazenamento de dados.
  *
  * @return   Um ponteiro para a nova estrutura de hashing inicializada.
- * @warning  Em caso de erro na alocação de memória, o programa será encerrado.
  */
-exhash_t *exh_init(size_t bucket_size);
+exhash_t *exh_init(uint16_t bucket_size, uint16_t entry_size, char path[255]);
 
-/** @brief    Serializa e grava o estado atual da tabela de hashing em um arquivo.
- *
- * @param    exh     Ponteiro para a estrutura a ser persistida.
- * @param    path    Caminho do arquivo (máx. 255 caracteres) onde os dados serão escritos.
- */
-void exh_write(exhash_t *exh, char path[255]);
-
-/** @brief    Lê e reconstrói uma tabela de hashing a partir de um arquivo.
+/** @brief    Lê um arquivo de extendible hashing e carrega suas informações.
  *
  * @param    path  Caminho do arquivo de origem.
  *
  * @return   Um ponteiro para a estrutura exhash_t carregada com os dados do arquivo.
  * @warning  O comportamento é indefinido se o arquivo estiver corrompido ou em formato inválido.
  */
-exhash_t *exh_read(char path[255]);
+exhash_t *exh_load(char path[255]);
 
-/** @brief    Insere um novo par key-value na tabela.
+/** @brief    Insere um novo par key-value na tabela, escrevendo a informação no arquivo relacionado.
  *
  * @param    exh     Ponteiro para a tabela de hashing.
  * @param    key     Chave numérica para indexação.
  * @param    data    Ponteiro para os dados a serem armazenados.
- * @param    nbytes  Tamanho em bytes dos dados apontados por data.
- *
- * @note     Esta função realiza uma cópia total dos bytes de data.
  */
-void exh_insert(exhash_t *exh, size_t key, void *data, size_t nbytes);
+void exh_insert(exhash_t *exh, uint32_t key, void *data);
 
 /** @brief    Recupera um dado associado a uma chave.
  *
@@ -48,16 +39,26 @@ void exh_insert(exhash_t *exh, size_t key, void *data, size_t nbytes);
  *
  * @return   Ponteiro para uma nova região de memória contendo a cópia dos dados.
  *           Retorna NULL caso a chave não seja encontrada.
- *
- * @note     O usuário é responsável por liberar a memória retornada por esta função.
  */
-void *exh_get(exhash_t *exh, size_t key);
+void *exh_get(exhash_t *exh, uint32_t key);
 
 /** @brief    Remove uma chave e seu dado correspondente da tabela.
  *
  * @param    exh  Ponteiro para a tabela de hashing.
  * @param    key  Chave a ser removida.
  */
-void exh_delete(exhash_t *exh, size_t key);
+void exh_remove(exhash_t *exh, uint32_t key);
+
+/** @brief    Destrói a estrutura de extendible hashing, sem deletar o seu arquivo.
+ *
+ * @param    exh  Ponteiro para a tabela de hashing.
+ */
+void exh_destroy(exhash_t *exh);
+
+/** @brief    Deleta o arquivo de hashing, e destrói a estrutura.
+ *
+ * @param    exh  Ponteiro para a tabela de hashing.
+ */
+void exh_delete(exhash_t *exh);
 
 #endif
