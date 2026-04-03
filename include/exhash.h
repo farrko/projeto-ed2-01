@@ -55,10 +55,4 @@ void exh_remove(exhash_t *exh, uint32_t key);
  */
 void exh_destroy(exhash_t *exh);
 
-/** @brief    Deleta o arquivo de hashing, e destrói a estrutura.
- *
- * @param    exh  Ponteiro para a tabela de hashing.
- */
-void exh_delete(exhash_t *exh);
-
 #endif
