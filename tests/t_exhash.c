@@ -8,14 +8,14 @@ typedef struct {
   char string[20];
 } struct_t;
 
-extern exhash_t *exh;
+exhash_t *exh;
 
 void setUp() {}
 
 void tearDown() {}
 
 void test_exhinit() {
-  exh = exh_init(5, sizeof(struct_t), "./test_hash.hf");
+  exh = exh_init(5, sizeof(struct_t), "./test_hash");
   TEST_ASSERT_NOT_NULL(exh);
 }
 
@@ -42,7 +42,7 @@ void test_exhinsert_exhget() {
 }
 
 void test_exhload() {
-  exhash_t *loaded = exh_load(  "./test_hash.hf");
+  exhash_t *loaded = exh_load(  "./test_hash");
 
   struct_t *l1 = exh_get(loaded, 1);
   struct_t *l2 = exh_get(loaded, 2);
@@ -64,6 +64,8 @@ void test_exhload() {
   free(g1);
   free(g2);
   free(g3);
+
+  exh_destroy(loaded);
 }
 
 void test_exhremove() {
@@ -80,7 +82,7 @@ int main() {
   RUN_TEST(test_exhload);
   RUN_TEST(test_exhremove);
 
-  exh_delete(exh);
+  exh_destroy(exh);
 
   return UNITY_END();
 }

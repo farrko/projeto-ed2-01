@@ -3,23 +3,36 @@
 
 #include <stdint.h>
 
+/*
+ *  EXTENDIBLE HASHING
+ *
+ * A estrutura de extendible hashing (exhash) possui como objetivo armazenar informações em disco de forma na qual seja possível
+ * realizar uma rápida leitura, inserção e remoção de dados. Para isso, ela se utiliza de dois arquivos: um header file,
+ * que guarda uma hash table que associa chaves numéricas à posições de um hash file, e este hash file, que armazena os
+ * dados em forma de buckets. A hash table indica onde começa o bucket onde está ou ficará guardada uma informação.
+ * A estrutura, como o nome indica, expande e retrai seu tamanho automaticamente, para acomodar qualquer volume de dados.
+ *
+ * Uma estrutura de exhash pode ser ou inicializada do zero (criando seus arquivos) por meio do exh_init(), ou carregada
+ * a partir de arquivos existentes por meio do exh_load(). São disponibilizadas operações de get, insert e delete.
+ */
+
 typedef struct exhash_t exhash_t;
 
-/** @brief    Inicialização de um arquivo e estrutura de extendible hashing.
+/** @brief    Inicialização de uma estrutura de extendible hashing e seus arquivos associados.
  *
  * @param    bucket_size  Capacidade máxima de registros em cada bucket.
  * @param    data_size    Tamanho dos dados a serem armazenados em cada registro de um bucket.
- * @param    path         Caminho do arquivo para armazenamento de dados.
+ * @param    path         Caminho do arquivo para armazenamento de dados, sem extensão (serão criados dois arquivos: {path}.hf e {path}.hfc)
  *
  * @return   Um ponteiro para a nova estrutura de hashing inicializada.
  */
 exhash_t *exh_init(uint16_t bucket_size, uint16_t entry_size, char path[255]);
 
-/** @brief    Lê um arquivo de extendible hashing e carrega suas informações.
+/** @brief    Lê os arquivos de extendible hashing e carrega suas informações.
  *
- * @param    path  Caminho do arquivo de origem.
+ * @param    path  Caminho dos arquivos de origem, sem extensão (serão lidos os arquivos {path}.hf e {path}.hfc)
  *
- * @return   Um ponteiro para a estrutura exhash_t carregada com os dados do arquivo.
+ * @return   Um ponteiro para a estrutura exhash_t carregada com os dados dos arquivos.
  * @warning  O comportamento é indefinido se o arquivo estiver corrompido ou em formato inválido.
  */
 exhash_t *exh_load(char path[255]);
@@ -49,7 +62,7 @@ void *exh_get(exhash_t *exh, uint32_t key);
  */
 void exh_remove(exhash_t *exh, uint32_t key);
 
-/** @brief    Destrói a estrutura de extendible hashing, sem deletar o seu arquivo.
+/** @brief    Destrói a estrutura de extendible hashing (não destrói os arquivos associados).
  *
  * @param    exh  Ponteiro para a tabela de hashing.
  */

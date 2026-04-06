@@ -24,22 +24,21 @@ int main() {
 
   exhash_t *exhloaded = exh_load("./testfile");
 
+  exh_remove(exh, 4);
+
   struct test_t *r1 = exh_get(exhloaded, 1);
   struct test_t *r2 = exh_get(exhloaded, 2);
   struct test_t *r3 = exh_get(exhloaded, 3);
-  struct test_t *r4 = exh_get(exhloaded, 4);
   struct test_t *r5 = exh_get(exhloaded, 5);
 
   if (r1 == NULL) printf("r1 is null\n");
   if (r2 == NULL) printf("r2 is null\n");
   if (r3 == NULL) printf("r3 is null\n");
-  if (r4 == NULL) printf("r4 is null\n");
   if (r5 == NULL) printf("r5 is null\n");
 
   printf("- R1\n\t- c -> %c\n\tn -> %d\n", r1->c, r1->n);
   printf("- R2\n\t- c -> %c\n\tn -> %d\n", r2->c, r2->n);
   printf("- R3\n\t- c -> %c\n\tn -> %d\n", r3->c, r3->n);
-  printf("- R4\n\t- c -> %c\n\tn -> %d\n", r4->c, r4->n);
   printf("- R5\n\t- c -> %c\n\tn -> %d\n", r5->c, r5->n);
 
   /*
@@ -57,7 +56,7 @@ int main() {
 
   struct test_t *r1 = exh_get(exh, 1);
   struct test_t *r2 = exh_get(exh, 2);
-  struct test_t *r3 = exh_get(exh, 3);
+    struct test_t *r3 = exh_get(exh, 3);
   struct test_t *r4 = exh_get(exh, 4);
   struct test_t *r5 = exh_get(exh, 5);
 
@@ -77,7 +76,6 @@ int main() {
   free(r1);
   free(r2);
   free(r3);
-  free(r4);
   free(r5);
 
   exh_destroy(exh);
