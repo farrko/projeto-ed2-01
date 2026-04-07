@@ -1,5 +1,5 @@
 #include "unity/unity.h"
-#include "exhash.h"
+#include "datast/exhash.h"
 
 #include <stdlib.h>
 
@@ -24,13 +24,13 @@ void test_exhinsert_exhget() {
   struct_t i2 = { 2, "def" };
   struct_t i3 = { 3, "ghi" };
 
-  exh_insert(exh, 1, &i1);
-  exh_insert(exh, 2, &i2);
-  exh_insert(exh, 3, &i3);
+  exh_insert(exh, "1", &i1);
+  exh_insert(exh, "2", &i2);
+  exh_insert(exh, "3", &i3);
 
-  struct_t *g1 = exh_get(exh, 1);
-  struct_t *g2 = exh_get(exh, 2);
-  struct_t *g3 = exh_get(exh, 3);
+  struct_t *g1 = exh_get(exh, "1");
+  struct_t *g2 = exh_get(exh, "2");
+  struct_t *g3 = exh_get(exh, "3");
 
   TEST_ASSERT_EQUAL_MEMORY(&i1, g1, sizeof(struct_t));
   TEST_ASSERT_EQUAL_MEMORY(&i2, g2, sizeof(struct_t));
@@ -44,13 +44,13 @@ void test_exhinsert_exhget() {
 void test_exhload() {
   exhash_t *loaded = exh_load(  "./test_hash");
 
-  struct_t *l1 = exh_get(loaded, 1);
-  struct_t *l2 = exh_get(loaded, 2);
-  struct_t *l3 = exh_get(loaded, 3);
+  struct_t *l1 = exh_get(loaded, "1");
+  struct_t *l2 = exh_get(loaded, "2");
+  struct_t *l3 = exh_get(loaded, "3");
 
-  struct_t *g1 = exh_get(exh, 1);
-  struct_t *g2 = exh_get(exh, 2);
-  struct_t *g3 = exh_get(exh, 3);
+  struct_t *g1 = exh_get(exh, "1");
+  struct_t *g2 = exh_get(exh, "2");
+  struct_t *g3 = exh_get(exh, "3");
 
   TEST_ASSERT_EQUAL_MEMORY(l1, g1, sizeof(struct_t));
   TEST_ASSERT_EQUAL_MEMORY(l2, g2, sizeof(struct_t));
@@ -69,8 +69,8 @@ void test_exhload() {
 }
 
 void test_exhremove() {
-  exh_remove(exh, 3);
-  struct_t *g3 = exh_get(exh, 3);
+  exh_remove(exh, "3");
+  struct_t *g3 = exh_get(exh, "3");
   TEST_ASSERT_NULL(g3);
 }
 
