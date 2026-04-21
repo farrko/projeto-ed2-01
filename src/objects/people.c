@@ -22,6 +22,10 @@ people_t *people_init(char cpf[16], char name[32], char surname[32], char gender
   return person;
 }
 
+size_t people_sizeof() {
+  return sizeof(people_t);
+}
+
 const char *people_get_cpf(const people_t *person) {
   return person->cpf;
 }
@@ -43,11 +47,13 @@ const char *people_get_date_of_birth(const people_t *person) {
 }
 
 void people_set_name(people_t *person, const char *name) {
-  strncpy(person->name, name, 31);
+  strncpy(person->name, name, sizeof(person->name) - 1);
+  person->name[sizeof(person->name) - 1] = '\0';
 }
 
 void people_set_surname(people_t *person, const char *surname) {
-  strncpy(person->surname, surname, 31);
+  strncpy(person->surname, surname, sizeof(person->surname) - 1);
+  person->surname[sizeof(person->surname) - 1] = '\0';
 }
 
 void people_set_gender(people_t *person, char gender) {
@@ -55,7 +61,8 @@ void people_set_gender(people_t *person, char gender) {
 }
 
 void people_set_date_of_birth(people_t *person, const char *date_of_birth) {
-  strncpy(person->date_of_birth, date_of_birth, 10);
+  strncpy(person->date_of_birth, date_of_birth, sizeof(person->date_of_birth) - 1);
+  person->date_of_birth[sizeof(person->date_of_birth) - 1] = '\0';
 }
 
 void people_destroy(people_t *person) {

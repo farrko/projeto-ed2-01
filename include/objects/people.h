@@ -1,8 +1,12 @@
 #ifndef PEOPLE_H
 
+#include <stddef.h>
+
 typedef struct people_t people_t;
 
 people_t *people_init(char cpf[16], char name[32], char surname[32], char gender, char date_of_birth[11]);
+
+size_t people_sizeof();
 
 const char *people_get_cpf(const people_t *person);
 const char *people_get_name(const people_t *person);

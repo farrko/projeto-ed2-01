@@ -8,14 +8,14 @@ block_t *block_init(const char cep[16], double x, double y, double width, double
 
 size_t block_sizeof();
 
-const char *block_get_cep(block_t *block);
-double block_get_x(block_t *block);
-double block_get_y(block_t *block);
-double block_get_width(block_t *block);
-double block_get_height(block_t *block);
-double block_get_border_width(block_t *block);
-const char *block_get_color(block_t *block);
-const char *block_get_border_color(block_t *block);
+const char *block_get_cep(const block_t *block);
+double block_get_x(const block_t *block);
+double block_get_y(const block_t *block);
+double block_get_width(const block_t *block);
+double block_get_height(const block_t *block);
+double block_get_border_width(const block_t *block);
+const char *block_get_color(const block_t *block);
+const char *block_get_border_color(const block_t *block);
 
 void block_set_x(block_t *block, double x);
 void block_set_y(block_t *block, double y);
