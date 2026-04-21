@@ -3,6 +3,20 @@
 
 #include <stddef.h>
 
+/*
+ *  TEXTO
+ *
+ * O módulo de texto (text) define a estrutura text_t, responsável por representar um elemento
+ * de texto como forma geométrica. Cada texto é identificado por um ID único e possui posição
+ * (x, y), ponto de ancoragem, propriedades visuais de cor e borda, e atributos tipográficos
+ * como família, peso e tamanho da fonte, além do próprio conteúdo textual.
+ *
+ * A estrutura pode ser criada por meio de text_init() e destruída com text_destroy().
+ * São disponibilizadas operações de leitura (get) e escrita (set) para todos os campos,
+ * além de text_get_area() para cálculo de área e text_clone() para duplicação da estrutura
+ * com um novo identificador.
+ */
+
 typedef struct text_t text_t;
 
 /** @brief    Inicialização de um texto.

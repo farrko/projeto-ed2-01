@@ -4,6 +4,20 @@
 #include <stddef.h>
 #include "shapes/point.h"
 
+/*
+ *  CÍRCULO
+ *
+ * O módulo de círculo (circle) define a estrutura circle_t, responsável por representar
+ * um círculo como forma geométrica. Cada círculo é identificado por um ID único e possui
+ * posição (x, y) do seu centro, raio, e propriedades visuais de cor de preenchimento e
+ * cor de borda para fins de exibição.
+ *
+ * A estrutura pode ser criada por meio de circle_init() e destruída com circle_destroy().
+ * São disponibilizadas operações de leitura (get) e escrita (set) para todos os campos,
+ * além de circle_get_area() para cálculo de área e circle_clone() para duplicação da
+ * estrutura com um novo identificador.
+ */
+
 typedef struct circle_t circle_t;
 
 /** @brief    Inicialização de um círculo.

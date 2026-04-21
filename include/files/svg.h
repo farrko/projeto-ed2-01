@@ -5,6 +5,17 @@
 #include "shapes/rectangle.h"
 #include "shapes/text.h"
 
+/*
+ *  SVG
+ *
+ * O módulo SVG fornece uma interface para criação e escrita de arquivos no formato SVG
+ * (Scalable Vector Graphics). A estrutura svg_t encapsula o arquivo de saída e expõe
+ * operações de escrita para as formas geométricas suportadas: círculos, retângulos e textos.
+ *
+ * Um arquivo SVG deve ser inicializado com svg_init() e encerrado com svg_close(), que
+ * finaliza a estrutura do documento e libera os recursos associados.
+ */
+
 typedef struct svg_t svg_t;
 
 /** @brief    Inicializa um arquivo SVG para escrita.

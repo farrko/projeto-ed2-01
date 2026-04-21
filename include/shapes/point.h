@@ -1,10 +1,22 @@
 #ifndef POINT_H
 #define POINT_H
 
+/*
+ *  PONTO
+ *
+ * O módulo de ponto (point) define duas estruturas de representação de posição no plano:
+ * point_t, para coordenadas cartesianas (x, y), e polar_coords_t, para coordenadas polares
+ * compostas por ângulo, distância e ponto de origem.
+ *
+ * Ambas as representações são intercambiáveis: são disponibilizadas funções de conversão
+ * entre os dois sistemas (polar_from_cartesian() e cartesian_from_polar()), bem como funções
+ * para obtenção das coordenadas cartesianas absolutas a partir de uma instância polar.
+ * Alterações no ponto de origem de coordenadas polares recalculam automaticamente ângulo e
+ * distância, preservando a posição absoluta no plano.
+ */
+
 typedef struct point_t point_t;
 typedef struct polar_coords_t polar_coords_t;
-
-
 
 /** @brief    Inicializa um ponto em coordenadas cartesianas.
   *
@@ -15,8 +27,6 @@ typedef struct polar_coords_t polar_coords_t;
   * @warning  Em caso de erro na alocação de memória, o programa será encerrado.
   */
 point_t *point_init(double x, double y);
-
-
 
 /** @brief    Inicializa um ponto em coordenadas polares.
   *
@@ -30,23 +40,17 @@ point_t *point_init(double x, double y);
   */
 polar_coords_t *polar_init(double angle, double distance, point_t *origin);
 
-
-
 /** @brief    Destrói uma instância de point_t.
   *
   * @param    point Pointer para o ponto a ser destruído.
   */
 void point_destroy(void *point);
 
-
-
 /** @brief    Destrói uma instância de polar_coords_t.
   *
   * @param    polar Pointer para as coordenadas polares a serem destruídas.
   */
 void polar_destroy(void *polar);
-
-
 
 /** @brief    Obtém o valor da coordenada X de um ponto.
   *
@@ -56,8 +60,6 @@ void polar_destroy(void *polar);
   */
 double point_get_x(point_t *point);
 
-
-
 /** @brief    Obtém o valor da coordenada Y de um ponto.
   *
   * @param    point Pointer para um ponto.
@@ -66,8 +68,6 @@ double point_get_x(point_t *point);
   */
 double point_get_y(point_t *point);
 
-
-
 /** @brief    Define a coordenada X de um ponto.
   *
   * @param    point Pointer para um ponto.
@@ -75,16 +75,12 @@ double point_get_y(point_t *point);
   */
 void point_set_x(point_t *point, double x);
 
-
-
 /** @brief    Define a coordenada Y de um ponto.
   *
   * @param    point Pointer para um ponto.
   * @param    y     Novo valor de Y.
   */
 void point_set_y(point_t *point, double y);
-
-
 
 /** @brief    Obtém o ângulo de uma instância de coordenadas polares.
   *
@@ -94,8 +90,6 @@ void point_set_y(point_t *point, double y);
   */
 double polar_get_angle(polar_coords_t *polar);
 
-
-
 /** @brief    Obtém a distância de uma instância de coordenadas polares.
   *
   * @param    polar Pointer para coordenadas polares.
@@ -103,8 +97,6 @@ double polar_get_angle(polar_coords_t *polar);
   * @return   A distância ao ponto de origem.
   */
 double polar_get_distance(polar_coords_t *polar);
-
-
 
 /** @brief    Obtém o ponto de origem associado às coordenadas polares.
   *
@@ -114,8 +106,6 @@ double polar_get_distance(polar_coords_t *polar);
   */
 point_t *polar_get_origin(polar_coords_t *polar);
 
-
-
 /** @brief    Define o ângulo de uma estrutura de coordenadas polares.
   *
   * @param    polar Pointer para coordenadas polares.
@@ -123,16 +113,12 @@ point_t *polar_get_origin(polar_coords_t *polar);
   */
 void polar_set_angle(polar_coords_t *polar, double angle);
 
-
-
 /** @brief    Define a distância de uma estrutura de coordenadas polares.
   *
   * @param    polar    Pointer para coordenadas polares.
   * @param    distance Nova distância ao ponto de origem.
   */
 void polar_set_distance(polar_coords_t *polar, double distance);
-
-
 
 /** @brief    Define o ponto de origem de uma estrutura de coordenadas polares.
   *
@@ -145,8 +131,6 @@ void polar_set_distance(polar_coords_t *polar, double distance);
   */
 void polar_set_origin(polar_coords_t *polar, point_t *origin);
 
-
-
 /** @brief    Obtém a coordenada X absoluta representada pelas coordenadas polares.
   *
   * @param    polar Pointer para coordenadas polares.
@@ -154,8 +138,6 @@ void polar_set_origin(polar_coords_t *polar, point_t *origin);
   * @return   A coordenada X resultante.
   */
 double polar_get_absolute_x(polar_coords_t *polar);
-
-
 
 /** @brief    Obtém a coordenada Y absoluta representada pelas coordenadas polares.
   *
@@ -165,8 +147,6 @@ double polar_get_absolute_x(polar_coords_t *polar);
   */
 double polar_get_absolute_y(polar_coords_t *polar);
 
-
-
 /** @brief    Constrói coordenadas polares a partir de dois pontos cartesianos.
   *
   * @param    origin Ponto inicial utilizado como referência.
@@ -175,8 +155,6 @@ double polar_get_absolute_y(polar_coords_t *polar);
   * @return   Uma instância de polar_coords_t representando a conversão.
   */
 polar_coords_t *polar_from_cartesian(point_t *origin, point_t *final);
-
-
 
 /** @brief    Converte coordenadas polares em coordenadas cartesianas.
   *

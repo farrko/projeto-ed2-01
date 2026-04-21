@@ -4,6 +4,20 @@
 #include <stddef.h>
 #include "shapes/point.h"
 
+/*
+ *  RETÂNGULO
+ *
+ * O módulo de retângulo (rectangle) define a estrutura rectangle_t, responsável por representar
+ * um retângulo como forma geométrica. Cada retângulo é identificado por um ID único e possui
+ * posição (x, y) do seu canto superior esquerdo, dimensões (largura e altura), e propriedades
+ * visuais de cor de preenchimento e cor de borda para fins de exibição.
+ *
+ * A estrutura pode ser criada por meio de rect_init() e destruída com rect_destroy().
+ * São disponibilizadas operações de leitura (get) e escrita (set) para todos os campos,
+ * além de rect_get_area() para cálculo de área e rect_clone() para duplicação da estrutura
+ * com um novo identificador.
+ */
+
 typedef struct rectangle_t rectangle_t;
 
 /** @brief    Inicialização de um retângulo.
