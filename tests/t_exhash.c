@@ -74,6 +74,20 @@ void test_exhremove() {
   TEST_ASSERT_NULL(g3);
 }
 
+void test_exh_get_all() {
+  struct_t *o = exh_get_all(exh);
+
+  struct_t *g1 = exh_get(exh, "1");
+  struct_t *g2 = exh_get(exh, "2");
+
+  TEST_ASSERT_EQUAL_MEMORY(o, g1, sizeof(struct_t));
+  TEST_ASSERT_EQUAL_MEMORY(&o[1], g2, sizeof(struct_t));
+
+  free(o);
+  free(g1);
+  free(g2);
+}
+
 int main() {
   UNITY_BEGIN();
 
@@ -81,6 +95,7 @@ int main() {
   RUN_TEST(test_exhinsert_exhget);
   RUN_TEST(test_exhload);
   RUN_TEST(test_exhremove);
+  RUN_TEST(test_exh_get_all);
 
   exh_destroy(exh);
 

@@ -7,7 +7,7 @@
 #include <stdbool.h>
 
 
-#define HASHTABLE_START 6
+#define HASHTABLE_START 8
 
 /*
 
@@ -51,7 +51,8 @@ typedef struct {
 struct exhash_t {
   uint16_t global_depth;
   uint16_t bucket_size;
-  uint16_t entry_size;
+  uint16_t data_size;
+  uint16_t entries_amount;
   char path[255];
   FILE *headerfile;
   FILE *hashfile;
@@ -70,6 +71,10 @@ uint64_t calculate_numerical_key(const char *key) {
   return nkey;
 }
 
+int cmp_uint32(const void *a, const void *b) {
+    return (*(uint32_t*)a > *(uint32_t*)b) - (*(uint32_t*)a < *(uint32_t*)b);
+}
+
 exh_bucket_t *exh_load_bucket(exhash_t *exh, uint32_t bucket_pos) {
   fseek(exh->hashfile, bucket_pos, SEEK_SET);
 
@@ -82,12 +87,12 @@ exh_bucket_t *exh_load_bucket(exhash_t *exh, uint32_t bucket_pos) {
 
   for (uint16_t i = 0; i < exh->bucket_size; i++) {
     exh_entry_t *entry = calloc(1, sizeof(exh_entry_t));
-    entry->bytes = calloc(exh->entry_size, sizeof(unsigned char));
+    entry->bytes = calloc(exh->data_size, sizeof(unsigned char));
     bucket->entries[i] = entry;
 
     fread(&entry->occupied, sizeof(bool), 1, exh->hashfile);
     fread(&entry->key, sizeof(uint64_t), 1, exh->hashfile);
-    fread(entry->bytes, sizeof(unsigned char), exh->entry_size, exh->hashfile);
+    fread(entry->bytes, sizeof(unsigned char), exh->data_size, exh->hashfile);
   }
 
   return bucket;
@@ -102,7 +107,7 @@ void exh_update_bucket(exhash_t *exh, exh_bucket_t *bucket) {
   for (uint16_t i = 0; i < exh->bucket_size; i++) {
     fwrite(&bucket->entries[i]->occupied, sizeof(bool), 1, exh->hashfile);
     fwrite(&bucket->entries[i]->key, sizeof(uint64_t), 1, exh->hashfile);
-    fwrite(bucket->entries[i]->bytes, exh->entry_size, 1, exh->hashfile);
+    fwrite(bucket->entries[i]->bytes, exh->data_size, 1, exh->hashfile);
   }
 
   fflush(exh->hashfile);
@@ -119,7 +124,7 @@ exh_bucket_t *exh_create_bucket(exhash_t *exh, uint16_t local_depth) {
 
   for (uint16_t i = 0; i < exh->bucket_size; i++) {
     exh_entry_t *entry = calloc(1, sizeof(exh_entry_t));
-    entry->bytes = calloc(exh->entry_size, sizeof(unsigned char));
+    entry->bytes = calloc(exh->data_size, sizeof(unsigned char));
     bucket->entries[i] = entry;
   }
 
@@ -158,12 +163,13 @@ void exh_extend_hashtable(exhash_t *exh) {
   exh_update_hashtable(exh);
 }
 
-exhash_t *exh_init(uint16_t bucket_size, uint16_t entry_size, char path[255]) {
+exhash_t *exh_init(uint16_t bucket_size, uint16_t data_size, char path[255]) {
   exhash_t *exh = malloc(sizeof(exhash_t));
 
   exh->global_depth = 0;
   exh->bucket_size = bucket_size;
-  exh->entry_size = entry_size;
+  exh->data_size = data_size;
+  exh->entries_amount = 0;
   strcpy(exh->path, path);
 
   char *hfcpath = r_strcat(exh->path, ".hfc");
@@ -172,7 +178,8 @@ exhash_t *exh_init(uint16_t bucket_size, uint16_t entry_size, char path[255]) {
 
   fwrite(&exh->global_depth, sizeof(uint16_t), 1, exh->headerfile);
   fwrite(&exh->bucket_size, sizeof(uint16_t), 1, exh->headerfile);
-  fwrite(&exh->entry_size, sizeof(uint16_t), 1, exh->headerfile);
+  fwrite(&exh->data_size, sizeof(uint16_t), 1, exh->headerfile);
+  fwrite(&exh->entries_amount, sizeof(uint16_t), 1, exh->headerfile);
 
   char *hfpath = r_strcat(exh->path, ".hf");
   exh->hashfile = fopen(hfpath, "w+b");
@@ -205,7 +212,8 @@ exhash_t *exh_load(char path[255]) {
 
   fread(&exh->global_depth, sizeof(uint16_t), 1, exh->headerfile);
   fread(&exh->bucket_size, sizeof(uint16_t), 1, exh->headerfile);
-  fread(&exh->entry_size, sizeof(uint16_t), 1, exh->headerfile);
+  fread(&exh->data_size, sizeof(uint16_t), 1, exh->headerfile);
+  fread(&exh->entries_amount, sizeof(uint16_t), 1, exh->headerfile);
 
   exh->buckets = calloc(1 << exh->global_depth, sizeof(uint32_t));
   fread(exh->buckets, sizeof(uint32_t), 1 << exh->global_depth, exh->headerfile);
@@ -225,10 +233,11 @@ void exh_insert(exhash_t *exh, const char *key, void *data) {
     for (uint16_t i = 0; i < exh->bucket_size; i++) {
       if (bucket->entries[i]->occupied) continue;
       bucket->occupied_entries++;
+      exh->entries_amount++;
 
       bucket->entries[i]->occupied = true;
       bucket->entries[i]->key = nkey;
-      memcpy(bucket->entries[i]->bytes, data, exh->entry_size);
+      memcpy(bucket->entries[i]->bytes, data, exh->data_size);
 
       exh_update_bucket(exh, bucket);
       exh_destroy_bucket(exh, bucket);
@@ -251,11 +260,11 @@ void exh_insert(exhash_t *exh, const char *key, void *data) {
         split_bucket->occupied_entries++;
         split_bucket->entries[i]->occupied = true;
         split_bucket->entries[i]->key = bucket->entries[i]->key;
-        memcpy(split_bucket->entries[i]->bytes, bucket->entries[i]->bytes, exh->entry_size);
+        memcpy(split_bucket->entries[i]->bytes, bucket->entries[i]->bytes, exh->data_size);
 
         bucket->occupied_entries--;
         bucket->entries[i]->occupied = false;
-        memset(bucket->entries[i]->bytes, 0, exh->entry_size);
+        memset(bucket->entries[i]->bytes, 0, exh->data_size);
       }
 
       exh_update_hashtable(exh);
@@ -287,12 +296,49 @@ void *exh_get(exhash_t *exh, const char *key) {
     if (!bucket->entries[i]->occupied) continue;
     if (bucket->entries[i]->key != nkey) continue;
 
-    data = calloc(1, exh->entry_size);
-    memcpy(data, bucket->entries[i]->bytes, exh->entry_size);
+    data = calloc(1, exh->data_size);
+    memcpy(data, bucket->entries[i]->bytes, exh->data_size);
   }
 
   exh_destroy_bucket(exh, bucket);
   return data;
+}
+
+uint16_t exh_entries_amount(exhash_t *exh) {
+  return exh->entries_amount;
+}
+
+void *exh_get_all(exhash_t *exh) {
+  void *objects = calloc(exh->entries_amount, exh->data_size);
+  size_t objects_amount = 0;
+
+  uint32_t *sorted_bucket_pos = malloc((1 << exh->global_depth) * sizeof(uint32_t));
+  memcpy(sorted_bucket_pos, exh->buckets, (1 << exh->global_depth) * sizeof(uint32_t));
+  qsort(sorted_bucket_pos, 1 << exh->global_depth, sizeof(uint32_t), cmp_uint32);
+
+  for (size_t i = 0; i < 1 << exh->global_depth; i++) {
+    if (objects_amount >= exh->entries_amount) break;
+
+    if (i == 0 || sorted_bucket_pos[i] != sorted_bucket_pos[i - 1]) {
+      exh_bucket_t *bucket = exh_load_bucket(exh, sorted_bucket_pos[i]);
+
+      uint16_t visited = 0;
+      for (size_t j = 0; j < exh->bucket_size; j++) {
+        if (visited >= bucket->occupied_entries) break;
+        if (!bucket->entries[j]->occupied) continue;
+
+        visited++;
+        memcpy((uint8_t *) objects + objects_amount * exh->data_size, bucket->entries[j]->bytes, exh->data_size);
+        objects_amount++;
+      }
+
+      exh_destroy_bucket(exh, bucket);
+    }
+  }
+
+  free(sorted_bucket_pos);
+
+  return objects;
 }
 
 void exh_remove(exhash_t *exh, const char *key) {
@@ -309,7 +355,9 @@ void exh_remove(exhash_t *exh, const char *key) {
 
     bucket->entries[i]->occupied = false;
     bucket->entries[i]->key = 0;
-    memset(bucket->entries[i]->bytes, 0, exh->entry_size);
+    memset(bucket->entries[i]->bytes, 0, exh->data_size);
+
+    exh->entries_amount--;
 
     exh_update_bucket(exh, bucket);
     break;

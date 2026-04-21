@@ -26,7 +26,7 @@ typedef struct exhash_t exhash_t;
  *
  * @return   Um ponteiro para a nova estrutura de hashing inicializada.
  */
-exhash_t *exh_init(uint16_t bucket_size, uint16_t entry_size, char path[255]);
+exhash_t *exh_init(uint16_t bucket_size, uint16_t data_size, char path[255]);
 
 /** @brief    Lê os arquivos de extendible hashing e carrega suas informações.
  *
@@ -54,6 +54,23 @@ void exh_insert(exhash_t *exh, const char *key, void *data);
  *           Retorna NULL caso a chave não seja encontrada.
  */
 void *exh_get(exhash_t *exh, const char *key);
+
+/** @brief    Retorna o número de entradas armazenadas na tabela.
+ *
+ * @param    exh  Ponteiro para a tabela de hashing.
+ *
+ * @return   Número de objetos atualmente armazenados na tabela.
+ */
+uint16_t exh_entries_amount(exhash_t *exh);
+
+/** @brief    Recupera todos os dados armazenados na tabela, iterando sobre os buckets do hash file.
+ *
+ * @param    exh  Ponteiro para a tabela de hashing.
+ *
+ * @return   Ponteiro para uma nova região de memória contendo uma lista com cópias de todos os dados armazenados.
+ *           Retorna NULL caso a tabela esteja vazia ou ocorra algum erro.
+ */
+void *exh_get_all(exhash_t *exh);
 
 /** @brief    Remove uma chave e seu dado correspondente da tabela.
  *
