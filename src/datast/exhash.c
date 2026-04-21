@@ -341,7 +341,7 @@ void *exh_get_all(exhash_t *exh) {
   return objects;
 }
 
-void exh_remove(exhash_t *exh, const char *key) {
+void *exh_remove(exhash_t *exh, const char *key) {
   uint64_t nkey = calculate_numerical_key(key);
 
   uint32_t hash = nkey % (1 << exh->global_depth);
@@ -349,9 +349,14 @@ void exh_remove(exhash_t *exh, const char *key) {
 
   exh_bucket_t *bucket = exh_load_bucket(exh, bucket_pos);
 
+  void *buf = NULL;
+
   for (uint16_t i = 0; i < exh->bucket_size; i++) {
     if (!bucket->entries[i]->occupied) continue;
     if (bucket->entries[i]->key != nkey) continue;
+
+    buf = malloc(exh->data_size);
+    memcpy(buf, bucket->entries[i]->bytes, exh->data_size);
 
     bucket->entries[i]->occupied = false;
     bucket->entries[i]->key = 0;
@@ -364,6 +369,8 @@ void exh_remove(exhash_t *exh, const char *key) {
   }
 
   exh_destroy_bucket(exh, bucket);
+
+  return buf;
 }
 
 void exh_destroy(exhash_t *exh) {

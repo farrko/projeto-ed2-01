@@ -76,8 +76,11 @@ void *exh_get_all(exhash_t *exh);
  *
  * @param    exh  Ponteiro para a tabela de hashing.
  * @param    key  Chave a ser removida.
+ *
+ * @return   Ponteiro para o objeto, agora removido da tabela.
+ *           Retorna NULL caso o objeto não existisse na tabela ou ocorra algum erro.
  */
-void exh_remove(exhash_t *exh, const char *key);
+void *exh_remove(exhash_t *exh, const char *key);
 
 /** @brief    Destrói a estrutura de extendible hashing (não destrói os arquivos associados).
  *
