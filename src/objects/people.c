@@ -17,6 +17,7 @@ people_t *people_init(char cpf[16], char name[32], char surname[32], char gender
   strncpy(person->cpf, cpf, 15);
   strncpy(person->name, name, 31);
   strncpy(person->surname, surname, 31);
+  person->gender = gender;
   strncpy(person->date_of_birth, date_of_birth, 10);
 
   return person;

@@ -26,7 +26,7 @@ typedef struct exhash_t exhash_t;
  *
  * @return   Um ponteiro para a nova estrutura de hashing inicializada.
  */
-exhash_t *exh_init(uint16_t bucket_size, uint16_t data_size, char path[255]);
+exhash_t *exh_init(uint16_t bucket_size, uint16_t data_size, const char *path);
 
 /** @brief    Lê os arquivos de extendible hashing e carrega suas informações.
  *
@@ -35,7 +35,7 @@ exhash_t *exh_init(uint16_t bucket_size, uint16_t data_size, char path[255]);
  * @return   Um ponteiro para a estrutura exhash_t carregada com os dados dos arquivos.
  * @warning  O comportamento é indefinido se o arquivo estiver corrompido ou em formato inválido.
  */
-exhash_t *exh_load(char path[255]);
+exhash_t *exh_load(const char *path);
 
 /** @brief    Insere um novo par key-value na tabela, escrevendo a informação no arquivo relacionado.
  *
