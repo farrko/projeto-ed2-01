@@ -1,6 +1,8 @@
 #ifndef PM_H
 #define PM_H
 
+#include "datast/exhash.h"
+
 /*
  *  PM
  *
@@ -13,9 +15,9 @@
 /** @brief    Processa um arquivo .pm e carrega suas informações em hashfiles.
   *
   * @param    pmpath      Caminho do arquivo PM.
-  * @param    pm_hfpath   Caminho para o hashfile que conterá os registros de pessoas.
-  * @param    ads_hfpath  Caminho para o hashfile que conterá os registros de endereços.
+  * @param    people      Estrutura de hashfile que conterá os registros de pessoas.
+  * @param    addresses   Estrutura de hashfile que conterá os registros de endereços.
   */
-void pm_processing(char *pmpath, char *pm_hfpath, char *ads_hfpath);
+void pm_processing(char *pmpath, exhash_t *people, exhash_t *addresses);
 
 #endif

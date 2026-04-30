@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <inttypes.h>
 
 point_t *calc_address_pos(address_t *ads, block_t *block) {
   char face = ads_get_face(ads);
@@ -384,6 +385,65 @@ void command_dspj(char cpf[16], exhash_t *people, exhash_t *addresses, exhash_t 
   people_destroy(person);
 }
 
-void qry_processing() {
+void qry_processing(const char *qrypath, const char *txtpath, svg_t *svg, exhash_t *people, exhash_t *blocks, exhash_t *addresses) {
+  FILE *qry = fopen(qrypath, "r");
+  if (qry == NULL) {
+    printf("Erro na leitura do arquivo .qry.\n");
+    exit(1);
+  }
 
+  FILE *txt = fopen(txtpath, "w");
+  if (txt == NULL) {
+    printf("Erro na criação do arquivo .txt.\n");
+    fclose(qry);
+    exit(1);
+  }
+
+  char buf[256];
+  while (fgets(buf, 256, qry)) {
+    if (strncmp(buf, "rq", 2) == 0) {
+      char cep[16];
+      sscanf(buf, "%*s %s", cep);
+      command_rq(cep, blocks, addresses, people, svg, txt);
+
+    } else if (strncmp(buf, "pq", 2) == 0) {
+      char cep[16];
+      sscanf(buf, "%*s %s", cep);
+      command_pq(cep, blocks, addresses, svg, txt);
+
+    } else if (strncmp(buf, "censo", 5) == 0) {
+      command_censo(people, addresses, txt);
+
+    } else if (strncmp(buf, "h?", 2) == 0) {
+      char cpf[16];
+      sscanf(buf, "%*s %s", cpf);
+      command_h(cpf, people, addresses, txt);
+
+    } else if (strncmp(buf, "nasc", 4) == 0) {
+      char cpf[16], name[32], surname[32], dob[11];
+      char gender;
+      sscanf(buf, "%*s %s %s %s %c %s", cpf, name, surname, &gender, dob);
+      command_nasc(cpf, name, surname, gender, dob, people, txt);
+
+    } else if (strncmp(buf, "rip", 3) == 0) {
+      char cpf[16];
+      sscanf(buf, "%*s %s", cpf);
+      command_rip(cpf, people, addresses, blocks, svg, txt);
+
+    } else if (strncmp(buf, "dspj", 4) == 0) {
+      char cpf[16];
+      sscanf(buf, "%*s %s", cpf);
+      command_dspj(cpf, people, addresses, blocks, svg, txt);
+
+    } else if (strncmp(buf, "mud", 3) == 0) {
+      char cpf[16], cep[16], complement[32];
+      char face;
+      uint16_t num;
+      sscanf(buf, "%*s %s %s %c %" SCNu16 " %s", cpf, cep, &face, &num, complement);
+      command_mud(cpf, cep, face, num, complement, people, addresses, blocks, svg, txt);
+    }
+  }
+
+  fclose(qry);
+  fclose(txt);
 }

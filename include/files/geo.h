@@ -1,5 +1,7 @@
 #ifndef GEO_H
 
+#include "datast/exhash.h"
+
 /*
  *  GEO
  *
@@ -12,8 +14,8 @@
 /** @brief    Processa um arquivo .geo e carrega suas informações em um hashfile.
   *
   * @param    geopath  Caminho do arquivo geo.
-  * @param    hfpath   Caminho para o hashfile que conterá os registros de quadras.
+  * @param    blocks   Estrutura de exhash que irá guardar as informações do .geo.
   */
-void geo_processing(char *geopath, char *hfpath);
+void geo_processing(char *geopath, exhash_t *blocks);
 
 #endif

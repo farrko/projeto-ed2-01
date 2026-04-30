@@ -5,10 +5,8 @@
 #include "datast/exhash.h"
 #include "objects/block.h"
 
-void geo_processing(char *geopath, char *hfpath) {
+void geo_processing(char *geopath, exhash_t *blocks) {
   FILE *geo = fopen(geopath, "r");
-
-  exhash_t *blocks = exh_init(5, block_sizeof(), hfpath);
 
   double border_width = 2;
   char color[16] = "#0F0F0F";
@@ -33,5 +31,5 @@ void geo_processing(char *geopath, char *hfpath) {
     }
   }
 
-  exh_destroy(blocks);
+  fclose(geo);
 }
