@@ -154,7 +154,7 @@ void exh_extend_hashtable(exhash_t *exh) {
   fseek(exh->headerfile, 0, SEEK_SET);
   fwrite(&exh->global_depth, sizeof(uint16_t), 1, exh->headerfile);
 
-  exh->buckets = realloc(exh->buckets, (size_t) 1 << exh->global_depth);
+  exh->buckets = realloc(exh->buckets, ((size_t) 1 << exh->global_depth) * sizeof(uint32_t));
 
   for (uint16_t i = 0; i < (1 << (exh->global_depth - 1)); i++) {
     exh->buckets[(1 << (exh->global_depth - 1)) + i] = exh->buckets[i];
@@ -246,29 +246,37 @@ void exh_insert(exhash_t *exh, const char *key, void *data) {
     }
   } else {
     if (bucket->local_depth < exh->global_depth) {
-      bucket->local_depth++;
+      uint16_t new_local_depth = bucket->local_depth + 1;
+      uint32_t discriminant_bit = (uint32_t)1 << bucket->local_depth;
 
-      exh_bucket_t *split_bucket = exh_create_bucket(exh, bucket->local_depth);
-      exh->buckets[hash] = split_bucket->bucket_pos;
+      exh_bucket_t *split_bucket = exh_create_bucket(exh, new_local_depth);
+      bucket->local_depth = new_local_depth;
 
+      // redistribui as entradas com base no bit discriminante
       for (uint16_t i = 0; i < exh->bucket_size; i++) {
         if (!bucket->entries[i]->occupied) continue;
 
-        uint32_t new_hash = bucket->entries[i]->key % (1 << exh->global_depth);
-        if (new_hash != hash) continue;
+        if (bucket->entries[i]->key & discriminant_bit) {
+          split_bucket->occupied_entries++;
+          split_bucket->entries[i]->occupied = true;
+          split_bucket->entries[i]->key = bucket->entries[i]->key;
+          memcpy(split_bucket->entries[i]->bytes, bucket->entries[i]->bytes, exh->data_size);
 
-        split_bucket->occupied_entries++;
-        split_bucket->entries[i]->occupied = true;
-        split_bucket->entries[i]->key = bucket->entries[i]->key;
-        memcpy(split_bucket->entries[i]->bytes, bucket->entries[i]->bytes, exh->data_size);
+          bucket->occupied_entries--;
+          bucket->entries[i]->occupied = false;
+          memset(bucket->entries[i]->bytes, 0, exh->data_size);
+        }
+      }
 
-        bucket->occupied_entries--;
-        bucket->entries[i]->occupied = false;
-        memset(bucket->entries[i]->bytes, 0, exh->data_size);
+      // atualiza TODOS os índices da tabela que apontavam para o bucket original
+      size_t table_size = (size_t)1 << exh->global_depth;
+      for (size_t i = 0; i < table_size; i++) {
+        if (exh->buckets[i] == bucket->bucket_pos && (i & discriminant_bit)) {
+          exh->buckets[i] = split_bucket->bucket_pos;
+        }
       }
 
       exh_update_hashtable(exh);
-
       exh_update_bucket(exh, bucket);
       exh_update_bucket(exh, split_bucket);
 
@@ -277,6 +285,7 @@ void exh_insert(exhash_t *exh, const char *key, void *data) {
 
       return exh_insert(exh, key, data);
     } else {
+      exh_destroy_bucket(exh, bucket);
       exh_extend_hashtable(exh);
       return exh_insert(exh, key, data);
     }

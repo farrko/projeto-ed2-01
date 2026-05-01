@@ -32,7 +32,7 @@ static void svg_write_blocks(svg_t *svg, exhash_t *blocks) {
 
   for (uint16_t i = 0; i < n_blocks; i++) {
     block_t *b = (block_t *)((uint8_t *)block_list + i * block_sizeof());
-    rectangle_t *rect = rect_init(i, block_get_x(b), block_get_y(b), block_get_width(b), block_get_height(b), (char *)block_get_color(b), (char *)block_get_border_color(b));
+    rectangle_t *rect = rect_init(i, block_get_x(b), block_get_y(b), block_get_width(b), block_get_height(b), block_get_color(b), block_get_border_color(b), block_get_border_width(b));
     svg_write_rectangle(svg, rect);
     rect_destroy(rect);
   }
@@ -78,7 +78,10 @@ int main(int argc, char **argv) {
   char *address_hfpath = malloc(strlen(out_dir) + strlen(geo_name) + 16);
   sprintf(address_hfpath, "%s/%s_addresses", out_dir, geo_name);
 
+  exhash_t *people = exh_init(5, people_sizeof(), people_hfpath);
+  exhash_t *addresses = exh_init(5, ads_sizeof(), address_hfpath);
   exhash_t *blocks = exh_init(5, block_sizeof(), blocks_hfpath);
+
   geo_processing(full_geopath, blocks);
 
   char *geosvg_path = malloc(strlen(out_dir) + strlen(geo_name) + 8);
@@ -87,9 +90,6 @@ int main(int argc, char **argv) {
   svg_t *geosvg = svg_init(geosvg_path);
   svg_write_blocks(geosvg, blocks);
   svg_close(geosvg);
-
-  exhash_t *people = exh_init(5, people_sizeof(), people_hfpath);
-  exhash_t *addresses = exh_init(5, ads_sizeof(), address_hfpath);
 
   if (pmpath != NULL) {
     char *full_pmpath = malloc(strlen(base_dir != NULL ? base_dir : "") + strlen(pmpath) + 2);

@@ -1,24 +1,28 @@
 #include <stdlib.h>
 #include <string.h>
-
+#include "utils.h"
 #include "objects/people.h"
 
+#define CPF_LEN 16
+#define NAME_SN_LEN 64
+#define DOB_LEN 11
+
 struct people_t {
-  char cpf[16];
-  char name[32];
-  char surname[32];
+  char cpf[CPF_LEN];
+  char name[NAME_SN_LEN];
+  char surname[NAME_SN_LEN];
   char gender;
-  char date_of_birth[11];
+  char date_of_birth[DOB_LEN];
 };
 
-people_t *people_init(char cpf[16], char name[32], char surname[32], char gender, char date_of_birth[11]) {
+people_t *people_init(const char *cpf, const char *name, const char *surname, char gender, const char *date_of_birth) {
   people_t *person = calloc(1, sizeof(people_t));
 
-  strncpy(person->cpf, cpf, 15);
-  strncpy(person->name, name, 31);
-  strncpy(person->surname, surname, 31);
+  strncpy(person->cpf, cpf, CPF_LEN - 1);
+  strncpy(person->name, name, NAME_SN_LEN - 1);
+  strncpy(person->surname, surname, NAME_SN_LEN - 1);
   person->gender = gender;
-  strncpy(person->date_of_birth, date_of_birth, 10);
+  strncpy(person->date_of_birth, date_of_birth, DOB_LEN - 1);
 
   return person;
 }
@@ -48,13 +52,13 @@ const char *people_get_date_of_birth(const people_t *person) {
 }
 
 void people_set_name(people_t *person, const char *name) {
-  strncpy(person->name, name, sizeof(person->name) - 1);
-  person->name[sizeof(person->name) - 1] = '\0';
+  strncpy(person->name, name, NAME_SN_LEN - 1);
+  person->name[strnlen(name, NAME_SN_LEN - 1)] = '\0';
 }
 
 void people_set_surname(people_t *person, const char *surname) {
-  strncpy(person->surname, surname, sizeof(person->surname) - 1);
-  person->surname[sizeof(person->surname) - 1] = '\0';
+  strncpy(person->surname, surname, NAME_SN_LEN - 1);
+  person->surname[strnlen(surname, NAME_SN_LEN - 1)] = '\0';
 }
 
 void people_set_gender(people_t *person, char gender) {
@@ -62,8 +66,8 @@ void people_set_gender(people_t *person, char gender) {
 }
 
 void people_set_date_of_birth(people_t *person, const char *date_of_birth) {
-  strncpy(person->date_of_birth, date_of_birth, sizeof(person->date_of_birth) - 1);
-  person->date_of_birth[sizeof(person->date_of_birth) - 1] = '\0';
+  strncpy(person->date_of_birth, date_of_birth, DOB_LEN - 1);
+  person->date_of_birth[strnlen(date_of_birth, DOB_LEN - 1)] = '\0';
 }
 
 void people_destroy(people_t *person) {

@@ -25,13 +25,13 @@ typedef struct block_t block_t;
  * @param   y             Coordenada y do ponto de ancoragem da quadra.
  * @param   width         Largura da quadra.
  * @param   height        Altura da quadra.
- * @param   border_width  Espessura da borda da quadra para exibição.
  * @param   color         Cor de preenchimento da quadra para exibição.
  * @param   border_color  Cor da borda da quadra para exibição.
+ * @param   border_width  Espessura da borda da quadra para exibição.
  *
  * @return  Ponteiro para a nova estrutura block_t inicializada.
  */
-block_t *block_init(const char cep[16], double x, double y, double width, double height, double border_width, const char color[16], const char border_color[16]);
+block_t *block_init(const char *cep, double x, double y, double width, double height, const char *color, const char *border_color, const char *border_width);
 
 /** @brief   Retorna o tamanho em bytes da estrutura block_t.
  *
@@ -79,14 +79,6 @@ double block_get_width(const block_t *block);
  */
 double block_get_height(const block_t *block);
 
-/** @brief   Recupera a espessura da borda da quadra.
- *
- * @param   block  Ponteiro para a quadra.
- *
- * @return  Espessura da borda da quadra.
- */
-double block_get_border_width(const block_t *block);
-
 /** @brief   Recupera a cor de preenchimento da quadra.
  *
  * @param   block  Ponteiro para a quadra.
@@ -102,6 +94,14 @@ const char *block_get_color(const block_t *block);
  * @return  Ponteiro para a string contendo a cor da borda.
  */
 const char *block_get_border_color(const block_t *block);
+
+/** @brief   Recupera a espessura da borda da quadra.
+ *
+ * @param   block  Ponteiro para a quadra.
+ *
+ * @return  Espessura da borda da quadra.
+ */
+const char *block_get_border_width(const block_t *block);
 
 /** @brief   Define a coordenada x do ponto de ancoragem da quadra.
  *
@@ -131,13 +131,6 @@ void block_set_width(block_t *block, double w);
  */
 void block_set_height(block_t *block, double h);
 
-/** @brief   Define a espessura da borda da quadra.
- *
- * @param   block         Ponteiro para a quadra.
- * @param   border_width  Nova espessura de borda a ser atribuída.
- */
-void block_set_border_width(block_t *block, double border_width);
-
 /** @brief   Define a cor de preenchimento da quadra.
  *
  * @param   block  Ponteiro para a quadra.
@@ -151,6 +144,13 @@ void block_set_color(block_t *block, const char *color);
  * @param   border_color  Nova string de cor de borda a ser atribuída.
  */
 void block_set_border_color(block_t *block, const char *border_color);
+
+/** @brief   Define a espessura da borda da quadra.
+ *
+ * @param   block         Ponteiro para a quadra.
+ * @param   border_width  Nova espessura de borda a ser atribuída.
+ */
+void block_set_border_width(block_t *block, const char *border_width);
 
 /** @brief   Destrói a estrutura de quadra, liberando a memória alocada.
  *

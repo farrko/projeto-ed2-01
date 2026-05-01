@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "files/svg.h"
+#include "shapes/rectangle.h"
 
 struct svg_t {
   FILE *svgfile;
@@ -10,7 +11,7 @@ struct svg_t {
 };
 
 svg_t *svg_init(const char *path) {
-  svg_t *svg = malloc(sizeof(svg_t));
+  svg_t *svg = calloc(1, sizeof(svg_t));
   if (svg == NULL) {
     printf("Erro na alocação de memória.\n");
     exit(1);
@@ -22,7 +23,7 @@ svg_t *svg_init(const char *path) {
     exit(1);
   }
 
-  fprintf(file, "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n");
+  fprintf(file, "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"10000\" height=\"10000\">\n");
 
   svg->svgfile = file;
   strncpy(svg->path, path, 254);
@@ -51,7 +52,7 @@ void svg_write_circle(svg_t *svg, circle_t *circle) {
 
 void svg_write_rectangle(svg_t *svg, rectangle_t *rect) {
   if (svg == NULL || rect == NULL) return;
-  fprintf(svg->svgfile, "<rect id=\"%zu\" x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\" fill=\"%s\" stroke=\"%s\" fill-opacity=\"0.5\" />\n", rect_get_id(rect), rect_get_x(rect), rect_get_y(rect), rect_get_width(rect), rect_get_height(rect), rect_get_color(rect), rect_get_border_color(rect));
+  fprintf(svg->svgfile, "<rect id=\"%zu\" x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\" fill=\"%s\" stroke=\"%s\" stroke-width=\"%s\" fill-opacity=\"0.5\" />\n", rect_get_id(rect), rect_get_x(rect), rect_get_y(rect), rect_get_width(rect), rect_get_height(rect), rect_get_color(rect), rect_get_border_color(rect), rect_get_border_width(rect));
 }
 
 void svg_write_text(svg_t *svg, text_t *text) {

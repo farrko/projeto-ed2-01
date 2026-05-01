@@ -193,7 +193,7 @@ void command_censo(exhash_t *people, exhash_t *addresses, FILE *txt) {
       total_residents++;
       if (gender == 'M' || gender == 'm') {
         male_residents++;
-      } else male_residents++;
+      } else female_residents++;
 
       ads_destroy(ads);
     }
@@ -331,7 +331,7 @@ void command_mud(char cpf[16], char cep[16], char face, uint16_t num, char compl
     double cy = point_get_y(pos);
     double half = 5.0;
 
-    rectangle_t *rect = rect_init(0, cx - half, cy - half, half * 2, half * 2, "#FF0000", "#FF0000");
+    rectangle_t *rect = rect_init(0, cx - half, cy - half, half * 2, half * 2, "#FF0000", "#FF0000", "2px");
     svg_write_rectangle(svg, rect);
     rect_destroy(rect);
 

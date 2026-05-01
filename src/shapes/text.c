@@ -85,7 +85,7 @@ void text_set_y(text_t *text, double y) {
 }
 
 void text_set_anchor(text_t *text, char *anchor) {
-  if (text->anchor != NULL) free(anchor); 
+  if (text->anchor != NULL) free(text->anchor);
  
   char *_anchor = malloc(strlen(anchor) + 1);
   strcpy(_anchor, anchor);

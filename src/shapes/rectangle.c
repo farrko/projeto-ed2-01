@@ -8,12 +8,13 @@ struct rectangle_t {
   size_t id;
   point_t *origin;
   double width, height;
-  char *color;
-  char *border_color;
+  char color[16];
+  char border_color[16];
+  char border_width[16];
 };
 
-rectangle_t *rect_init(size_t id, double x, double y, double width, double height, char *color, char *border_color) {
-  rectangle_t *rectangle = malloc(sizeof(rectangle_t));
+rectangle_t *rect_init(size_t id, double x, double y, double width, double height, const char *color, const char *border_color, const char *border_width) {
+  rectangle_t *rectangle = calloc(1, sizeof(rectangle_t));
   if (rectangle == NULL) {
     printf("Erro na alocação de memória.\n");
     exit(1);
@@ -27,22 +28,15 @@ rectangle_t *rect_init(size_t id, double x, double y, double width, double heigh
   rectangle->width = width;
   rectangle->height = height;
 
-  char *_color = malloc(strlen(color) + 1);
-  strcpy(_color, color);
-  rectangle->color = _color;
-
-  char *_border_color = malloc(strlen(border_color) + 1);
-  strcpy(_border_color, border_color);
-  rectangle->border_color = _border_color;
+  strncpy(rectangle->color, color, 15);
+  strncpy(rectangle->border_color, border_color, 15);
+  strncpy(rectangle->border_width, border_width, 15);
 
   return rectangle;
 }
 
 void rect_destroy(void *rectangle) {
   rectangle_t *rect = (rectangle_t *) rectangle;
-
-  if (rect->color != NULL) free(rect->color);
-  if (rect->border_color != NULL) free(rect->border_color);
 
   point_destroy(rect->origin);
 
@@ -54,7 +48,7 @@ void rect_set_x(rectangle_t *rect, double x) {
 }
 
 void rect_set_y(rectangle_t *rect, double y) {
-  point_set_x(rect->origin, y);
+  point_set_y(rect->origin, y);
 }
 
 void rect_set_width(rectangle_t *rect, double width) {
@@ -65,20 +59,16 @@ void rect_set_height(rectangle_t *rect, double height) {
   rect->height = height;
 }
 
-void rect_set_color(rectangle_t *rect, char *color) {
-  if (rect->color != NULL) free(rect->color);
- 
-  char *_color = malloc(strlen(color) + 1);
-  strcpy(_color, color);
-  rect->color = _color;
+void rect_set_color(rectangle_t *rect, const char *color) {
+  strncpy(rect->color, color, 15);
 }
 
-void rect_set_border_color(rectangle_t *rect, char *border_color) {
-  if (rect->border_color != NULL) free(rect->border_color);
- 
-  char *_border_color = malloc(strlen(border_color) + 1);
-  strcpy(_border_color, border_color);
-  rect->border_color = _border_color;
+void rect_set_border_color(rectangle_t *rect, const char *border_color) {
+  strncpy(rect->border_color, border_color, 15);
+}
+
+void rect_set_border_width(rectangle_t *rect, const char *border_width) {
+  strncpy(rect->border_width, border_width, 15);
 }
 
 size_t rect_get_id(rectangle_t *rect) {
@@ -105,14 +95,14 @@ double rect_get_height(rectangle_t *rect) {
   return rect->height;
 }
 
-char *rect_get_color(rectangle_t *rect) {
+const char *rect_get_color(rectangle_t *rect) {
   return rect->color;
 }
 
-char *rect_get_border_color(rectangle_t *rect) {
+const char *rect_get_border_color(rectangle_t *rect) {
   return rect->border_color;
 }
 
-rectangle_t *rect_clone(rectangle_t *rect, size_t id) {
-  return rect_init(id, point_get_x(rect->origin), point_get_y(rect->origin), rect->width, rect->height, rect->color, rect->border_color);
+const char *rect_get_border_width(rectangle_t *rect) {
+  return rect->border_width;
 }

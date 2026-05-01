@@ -29,11 +29,12 @@ typedef struct rectangle_t rectangle_t;
   * @param    height          Altura do retângulo.
   * @param    color           String com o código HEX da cor de preenchimento.
   * @param    border_color    String com o código HEX da cor da borda.
+  * @param    border_width    String com o tamanho da borda, indicando também a unidade.
   *
   * @return   Uma instância de retângulo.
   * @warning  Em caso de erro na alocação de memória, o programa será encerrado.
   */
-rectangle_t *rect_init(size_t id, double x, double y, double width, double height, char *color, char *border_color);
+rectangle_t *rect_init(size_t id, double x, double y, double width, double height, const char *color, const char *border_color, const char *border_width);
 
 
 
@@ -86,7 +87,7 @@ void rect_set_height(rectangle_t *rect, double height);
   * @param    rect    Uma instância de retângulo.
   * @param    color   String com o código HEX da cor de preenchimento.
   */
-void rect_set_color(rectangle_t *rect, char *color);
+void rect_set_color(rectangle_t *rect, const char *color);
 
 
 
@@ -95,7 +96,16 @@ void rect_set_color(rectangle_t *rect, char *color);
   * @param    rect          Uma instância de retângulo.
   * @param    border_color  String com o código HEX da cor da borda.
   */
-void rect_set_border_color(rectangle_t *rect, char *border_color);
+void rect_set_border_color(rectangle_t *rect, const char *border_color);
+
+
+
+/** @brief    Define a largura da borda de um retângulo.
+  *
+  * @param    rect          Uma instância de retângulo.
+  * @param    border_width  String com o tamanho da borda, indicando também a unidade.
+  */
+void rect_set_border_width(rectangle_t *rect, const char *border_width);
 
 
 
@@ -164,7 +174,7 @@ double rect_get_height(rectangle_t *rect);
   *
   * @return   Uma string com a cor de preenchimento do retângulo.
   */
-char *rect_get_color(rectangle_t *rect);
+const char *rect_get_color(rectangle_t *rect);
 
 
 
@@ -174,28 +184,16 @@ char *rect_get_color(rectangle_t *rect);
   *
   * @return   Uma string com a cor da borda do retângulo.
   */
-char *rect_get_border_color(rectangle_t *rect);
+const char *rect_get_border_color(rectangle_t *rect);
 
 
 
-/** @brief    Retorna a área de um retângulo.
+/** @brief    Retorna a largura da borda de um retângulo.
   *
   * @param    rect    Uma instância de retângulo.
   *
-  * @return   A área do retângulo.
+  * @return   String com o tamanho da borda.
   */
-double rect_get_area(rectangle_t *rect);
-
-
-
-/** @brief    Cria uma cópia de um retângulo com um novo identificador.
-  *
-  * @param    rect   Uma instância de retângulo a ser clonada.
-  * @param    id     Novo identificador para o retângulo clonado.
-  *
-  * @return   Uma nova instância de retângulo, idêntica à original, mas com o novo ID.
-  * @warning  Em caso de erro na alocação de memória, o programa será encerrado.
-  */
-rectangle_t *rect_clone(rectangle_t *rect, size_t id);
+const char *rect_get_border_width(rectangle_t *rect);
 
 #endif

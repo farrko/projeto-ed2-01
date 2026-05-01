@@ -27,7 +27,7 @@ typedef struct people_t people_t;
  *
  * @return  Ponteiro para a nova estrutura people_t inicializada.
  */
-people_t *people_init(char cpf[16], char name[32], char surname[32], char gender, char date_of_birth[11]);
+people_t *people_init(const char *cpf, const char *name, const char *surname, char gender, const char *date_of_birth);
 
 /** @brief   Retorna o tamanho em bytes da estrutura people_t.
  *

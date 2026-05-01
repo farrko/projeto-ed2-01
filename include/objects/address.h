@@ -27,7 +27,7 @@ typedef struct address_t address_t;
  *
  * @return  Ponteiro para a nova estrutura address_t inicializada.
  */
-address_t *ads_init(const char cpf[16], const char cep[16], char face, uint16_t number, const char complement[32]);
+address_t *ads_init(const char *cpf, const char *cep, char face, uint16_t number, const char *complement);
 
 /** @brief   Retorna o tamanho em bytes da estrutura address_t.
  *

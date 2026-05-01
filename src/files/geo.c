@@ -8,7 +8,7 @@
 void geo_processing(char *geopath, exhash_t *blocks) {
   FILE *geo = fopen(geopath, "r");
 
-  double border_width = 2;
+  char border_width[16] = "2px";
   char color[16] = "#0F0F0F";
   char border_color[16] = "#DF3F3F";
 
@@ -20,14 +20,14 @@ void geo_processing(char *geopath, exhash_t *blocks) {
 
       sscanf(buf, "%*s %s %lf %lf %lf %lf", cep, &x, &y, &width, &height);
 
-      block_t *block = block_init(cep, x, y, width, height, border_width, color, border_color);
+      block_t *block = block_init(cep, x, y, width, height, color, border_color, border_width);
       exh_insert(blocks, cep, block);
 
       block_destroy(block);
     }
 
     if (!strncmp(buf, "cq", 2)) {
-      sscanf(buf, "%*s %lf %s %s", &border_width, color, border_color);
+      sscanf(buf, "%*s %s %s %s", border_width, color, border_color);
     }
   }
 

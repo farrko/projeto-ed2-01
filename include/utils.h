@@ -1,6 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <stddef.h>
+
 /*
  *  UTILITÁRIOS
  *
@@ -17,5 +19,7 @@
  * @return  Ponteiro para uma nova string contendo a concatenação de s1 e s2.
  */
 char *r_strcat(char *s1, char *s2);
+
+size_t strnlen(const char *str, size_t maxlen);
 
 #endif
