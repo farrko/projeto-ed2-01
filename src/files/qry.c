@@ -66,7 +66,7 @@ void command_rq(char cep[16], exhash_t *blocks, exhash_t *addresses, exhash_t *p
       ads_destroy(ads);
 
       people_t *person = exh_get(people, ads_get_cpf(current_address));
-      fprintf(txt, "- Pessoa removida:\n\t- Nome: %s %s\n\t- CPF: %s\n\n", people_get_name(person), people_get_surname(person), people_get_cpf(person));
+      fprintf(txt, "- Pessoa despejada:\n\t- Nome: %s %s\n\t- CPF: %s\n\n", people_get_name(person), people_get_surname(person), people_get_cpf(person));
 
       people_destroy(person);
     }

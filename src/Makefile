@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -std=c99 -Wall -Wextra -Werror -I../include -I../lib
+CFLAGS = -std=c99 -DUNITY_INCLUDE_DOUBLE -Wall -Wextra -Werror -I../include -I../lib
 LDFLAGS = -lm
 
 SRC_DIR := .
@@ -56,4 +56,4 @@ run_tests: tests
 
 clean:
 	rm -rf $(BUILD_DIR) $(BIN) $(TEST_BINS)
-	rm -f *.hf *.hfc
+	rm -f *.hf *.hfc *.hfd

@@ -96,7 +96,7 @@ void block_set_border_color(block_t *block, const char *border_color) {
 }
 
 void block_set_border_width(block_t *block, const char *border_width) {
-  strncpy(block->border_color, border_width, BW_LEN - 1);
+  strncpy(block->border_width, border_width, BW_LEN - 1);
   block->border_width[strnlen(border_width, BW_LEN - 1)] = '\0';
 }
 

@@ -20,6 +20,14 @@
  */
 char *r_strcat(char *s1, char *s2);
 
+/** @brief   Retorna o comprimento de uma string, limitado a um número máximo de caracteres.
+ *
+ * @param   str     String a ser medida.
+ * @param   maxlen  Número máximo de caracteres a percorrer.
+ *
+ * @return  O comprimento da string, ou maxlen caso o terminador nulo não seja
+ *          encontrado dentro dos primeiros maxlen caracteres.
+ */
 size_t strnlen(const char *str, size_t maxlen);
 
 #endif

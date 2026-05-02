@@ -53,7 +53,7 @@ const char *ads_get_complement(const address_t *ads) {
 
 void ads_set_cpf(address_t *ads, const char *cpf) {
   strncpy(ads->cpf, cpf, CPF_LEN - 1);
-  ads->cep[strnlen(cpf, CPF_LEN - 1)] = '\0';
+  ads->cpf[strnlen(cpf, CPF_LEN - 1)] = '\0';
 }
 
 void ads_set_cep(address_t *ads, const char *cep) {

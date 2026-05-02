@@ -10,7 +10,6 @@
  * em um hashfile.
  */
 
-
 /** @brief    Processa um arquivo .geo e carrega suas informações em um hashfile.
   *
   * @param    geopath  Caminho do arquivo geo.

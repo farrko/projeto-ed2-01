@@ -47,16 +47,12 @@ const char *svg_get_path(svg_t *svg);
   */
 void svg_write_circle(svg_t *svg, circle_t *circle);
 
-
-
 /** @brief    Escreve um retângulo no arquivo SVG.
   *
   * @param    svg       Uma instância de svg.
   * @param    rect      A forma de retângulo a ser escrita.
   */
 void svg_write_rectangle(svg_t *svg, rectangle_t *rect);
-
-
 
 /** @brief    Escreve um texto no arquivo SVG.
   *

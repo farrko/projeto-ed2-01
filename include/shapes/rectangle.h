@@ -13,9 +13,7 @@
  * visuais de cor de preenchimento e cor de borda para fins de exibição.
  *
  * A estrutura pode ser criada por meio de rect_init() e destruída com rect_destroy().
- * São disponibilizadas operações de leitura (get) e escrita (set) para todos os campos,
- * além de rect_get_area() para cálculo de área e rect_clone() para duplicação da estrutura
- * com um novo identificador.
+ * São disponibilizadas operações de leitura (get) e escrita (set) para todos os campos.
  */
 
 typedef struct rectangle_t rectangle_t;
@@ -36,15 +34,11 @@ typedef struct rectangle_t rectangle_t;
   */
 rectangle_t *rect_init(size_t id, double x, double y, double width, double height, const char *color, const char *border_color, const char *border_width);
 
-
-
 /** @brief    Destrói um retângulo.
   *
   * @param    rectangle   Uma instância de retângulo.
   */
 void rect_destroy(void *rectangle);
-
-
 
 /** @brief    Define o X de um retângulo.
   *
@@ -53,16 +47,12 @@ void rect_destroy(void *rectangle);
   */
 void rect_set_x(rectangle_t *rect, double x);
 
-
-
 /** @brief    Define o Y de um retângulo.
   *
   * @param    rect    Uma instância de retângulo.
   * @param    y       Coordenada Y do canto superior esquerdo.
   */
 void rect_set_y(rectangle_t *rect, double y);
-
-
 
 /** @brief    Define a largura de um retângulo.
   *
@@ -71,16 +61,12 @@ void rect_set_y(rectangle_t *rect, double y);
   */
 void rect_set_width(rectangle_t *rect, double width);
 
-
-
 /** @brief    Define a altura de um retângulo.
   *
   * @param    rect    Uma instância de retângulo.
   * @param    height  Altura do retângulo.
   */
 void rect_set_height(rectangle_t *rect, double height);
-
-
 
 /** @brief    Define a cor de preenchimento de um retângulo.
   *
@@ -89,8 +75,6 @@ void rect_set_height(rectangle_t *rect, double height);
   */
 void rect_set_color(rectangle_t *rect, const char *color);
 
-
-
 /** @brief    Define a cor da borda de um retângulo.
   *
   * @param    rect          Uma instância de retângulo.
@@ -98,16 +82,12 @@ void rect_set_color(rectangle_t *rect, const char *color);
   */
 void rect_set_border_color(rectangle_t *rect, const char *border_color);
 
-
-
 /** @brief    Define a largura da borda de um retângulo.
   *
   * @param    rect          Uma instância de retângulo.
   * @param    border_width  String com o tamanho da borda, indicando também a unidade.
   */
 void rect_set_border_width(rectangle_t *rect, const char *border_width);
-
-
 
 /** @brief    Retorna o ID de um retângulo.
   *
@@ -117,8 +97,6 @@ void rect_set_border_width(rectangle_t *rect, const char *border_width);
   */
 size_t rect_get_id(rectangle_t *rect);
 
-
-
 /** @brief    Obtém o ponto de origem (canto inferior esquerdo) de um retângulo.
   *
   * @param    rect Pointer para um retângulo.
@@ -126,8 +104,6 @@ size_t rect_get_id(rectangle_t *rect);
   * @return   O ponto que representa a origem do retângulo.
   */
 point_t *rect_get_origin(rectangle_t *rect);
-
-
 
 /** @brief    Retorna o X de um retângulo.
   *
@@ -137,16 +113,12 @@ point_t *rect_get_origin(rectangle_t *rect);
   */
 double rect_get_x(rectangle_t *rect);
 
-
-
 /** @brief    Retorna o Y de um retângulo.
   *
   * @param    rect    Uma instância de retângulo.
   * @return   O Y do canto superior esquerdo do retângulo.
   */
 double rect_get_y(rectangle_t *rect);
-
-
 
 /** @brief    Retorna a largura de um retângulo.
   *
@@ -156,8 +128,6 @@ double rect_get_y(rectangle_t *rect);
   */
 double rect_get_width(rectangle_t *rect);
 
-
-
 /** @brief    Retorna a altura de um retângulo.
   *
   * @param    rect    Uma instância de retângulo.
@@ -165,8 +135,6 @@ double rect_get_width(rectangle_t *rect);
   * @return   A altura do retângulo.
   */
 double rect_get_height(rectangle_t *rect);
-
-
 
 /** @brief    Retorna a cor de preenchimento de um retângulo.
   *
@@ -176,8 +144,6 @@ double rect_get_height(rectangle_t *rect);
   */
 const char *rect_get_color(rectangle_t *rect);
 
-
-
 /** @brief    Retorna a cor da borda de um retângulo.
   *
   * @param    rect    Uma instância de retângulo.
@@ -185,8 +151,6 @@ const char *rect_get_color(rectangle_t *rect);
   * @return   Uma string com a cor da borda do retângulo.
   */
 const char *rect_get_border_color(rectangle_t *rect);
-
-
 
 /** @brief    Retorna a largura da borda de um retângulo.
   *

@@ -11,7 +11,6 @@
  * módulo processa o arquivo e guarda suas informações em hashfiles.
  */
 
-
 /** @brief    Processa um arquivo .pm e carrega suas informações em hashfiles.
   *
   * @param    pmpath      Caminho do arquivo PM.

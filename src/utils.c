@@ -12,7 +12,7 @@ char *r_strcat(char *s1, char *s2) {
 
 size_t strnlen(const char *str, size_t maxlen) {
   for (size_t i = 0; i < maxlen; i++) {
-    if (str[i - 1] == '\0') return i;
+    if (str[i] == '\0') return i;
   }
 
   return maxlen;

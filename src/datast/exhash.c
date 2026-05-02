@@ -16,6 +16,7 @@
   GLOBAL DEPTH -> 2 BYTES
   BUCKET SIZE -> 2 BYTES
   DATA SIZE -> 2 BYTES
+  ENTRIES_AMOUNT -> 2 BYTES
 
 
   TAMANHO DA TABELA -> (2 ^ GLOBAL_DEPTH)
@@ -56,6 +57,7 @@ struct exhash_t {
   char path[255];
   FILE *headerfile;
   FILE *hashfile;
+  FILE *descfile;
   uint32_t *buckets;
 };
 
@@ -163,6 +165,12 @@ void exh_extend_hashtable(exhash_t *exh) {
   exh_update_hashtable(exh);
 }
 
+void exh_update_entries_amount(exhash_t *exh) {
+  fseek(exh->headerfile, HASHTABLE_START - 2, SEEK_SET);
+  fwrite(&exh->entries_amount, sizeof(uint16_t), 1, exh->headerfile);
+  fflush(exh->headerfile);
+}
+
 exhash_t *exh_init(uint16_t bucket_size, uint16_t data_size, const char *path) {
   exhash_t *exh = malloc(sizeof(exhash_t));
 
@@ -184,6 +192,10 @@ exhash_t *exh_init(uint16_t bucket_size, uint16_t data_size, const char *path) {
   char *hfpath = r_strcat(exh->path, ".hf");
   exh->hashfile = fopen(hfpath, "w+b");
   free(hfpath);
+
+  char *hfdpath = r_strcat(exh->path, ".hfd");
+  exh->descfile = fopen(hfdpath, "w+b");
+  free(hfdpath);
 
   exh->buckets = calloc(1, sizeof(uint32_t));
   exh_bucket_t *initial = exh_create_bucket(exh, 0);
@@ -222,6 +234,8 @@ exhash_t *exh_load(const char *path) {
 }
 
 void exh_insert(exhash_t *exh, const char *key, void *data) {
+  fprintf(exh->descfile, "\n\n--- INSERÇÃO DE DADOS ---\n");
+
   uint64_t nkey = calculate_numerical_key(key);
 
   uint32_t hash = nkey % ((uint32_t) 1 << exh->global_depth);
@@ -234,10 +248,22 @@ void exh_insert(exhash_t *exh, const char *key, void *data) {
       if (bucket->entries[i]->occupied) continue;
       bucket->occupied_entries++;
       exh->entries_amount++;
+      exh_update_entries_amount(exh);
 
       bucket->entries[i]->occupied = true;
       bucket->entries[i]->key = nkey;
       memcpy(bucket->entries[i]->bytes, data, exh->data_size);
+
+
+      fprintf(exh->descfile, "\t-- INSERÇÃO --\n");
+      fprintf(exh->descfile, "\t- Key: %s / Hash: %d\n", key, hash);
+
+      fprintf(exh->descfile, "\t- Dados: ");
+      for (int i = 0; i < exh->data_size; i++) {
+          if (i > 0) fprintf(exh->descfile, ":");
+          fprintf(exh->descfile, "%02X", ((uint8_t *) data)[i]);
+      }
+      fprintf(exh->descfile, "\n");
 
       exh_update_bucket(exh, bucket);
       exh_destroy_bucket(exh, bucket);
@@ -246,6 +272,8 @@ void exh_insert(exhash_t *exh, const char *key, void *data) {
     }
   } else {
     if (bucket->local_depth < exh->global_depth) {
+      fprintf(exh->descfile, "\t-- SPLIT DE BUCKET --\n");
+
       uint16_t new_local_depth = bucket->local_depth + 1;
       uint32_t discriminant_bit = (uint32_t)1 << bucket->local_depth;
 
@@ -283,6 +311,8 @@ void exh_insert(exhash_t *exh, const char *key, void *data) {
 
       return exh_insert(exh, key, data);
     } else {
+      fprintf(exh->descfile, "\t-- EXTENSÃO DE TABELA --\n");
+
       exh_destroy_bucket(exh, bucket);
       exh_extend_hashtable(exh);
       return exh_insert(exh, key, data);
@@ -351,6 +381,8 @@ void *exh_get_all(exhash_t *exh) {
 }
 
 void *exh_remove(exhash_t *exh, const char *key) {
+  fprintf(exh->descfile, "\n\n--- REMOÇÃO DE DADOS ---\n");
+
   uint64_t nkey = calculate_numerical_key(key);
 
   uint32_t hash = nkey % ((uint32_t) 1 << exh->global_depth);
@@ -367,13 +399,28 @@ void *exh_remove(exhash_t *exh, const char *key) {
     buf = malloc(exh->data_size);
     memcpy(buf, bucket->entries[i]->bytes, exh->data_size);
 
+    fprintf(exh->descfile, "\t- Key: %s / Hash: %d\n", key, hash);
+
+    fprintf(exh->descfile, "\t- Dados: ");
+    for (int i = 0; i < exh->data_size; i++) {
+        if (i > 0) fprintf(exh->descfile, ":");
+        fprintf(exh->descfile, "%02X", ((uint8_t *) buf)[i]);
+    }
+    fprintf(exh->descfile, "\n");
+
+
     bucket->entries[i]->occupied = false;
     bucket->entries[i]->key = 0;
     memset(bucket->entries[i]->bytes, 0, exh->data_size);
 
     exh->entries_amount--;
+    exh_update_entries_amount(exh);
 
     break;
+  }
+
+  if (buf == NULL) {
+    fprintf(exh->descfile, "\t- Key não encontrada\n");
   }
 
   exh_update_bucket(exh, bucket);
