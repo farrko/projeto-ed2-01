@@ -23,7 +23,7 @@ svg_t *svg_init(const char *path) {
     exit(1);
   }
 
-  fprintf(file, "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"10000\" height=\"10000\">\n");
+  fprintf(file, "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"25000\" height=\"25000\">\n");
 
   svg->svgfile = file;
   strncpy(svg->path, path, 254);

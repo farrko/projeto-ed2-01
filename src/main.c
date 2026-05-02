@@ -28,10 +28,11 @@ static char *extract_basename(const char *filepath) {
 
 static void svg_write_blocks(svg_t *svg, exhash_t *blocks) {
   uint16_t n_blocks = exh_entries_amount(blocks);
-  block_t *block_list = exh_get_all(blocks);
+  uint8_t *block_list = exh_get_all(blocks);
 
   for (uint16_t i = 0; i < n_blocks; i++) {
-    block_t *b = (block_t *)((uint8_t *)block_list + i * block_sizeof());
+    block_t *b = (block_t *)(block_list + i * block_sizeof());
+
     rectangle_t *rect = rect_init(i, block_get_x(b), block_get_y(b), block_get_width(b), block_get_height(b), block_get_color(b), block_get_border_color(b), block_get_border_width(b));
     svg_write_rectangle(svg, rect);
     rect_destroy(rect);
@@ -126,8 +127,8 @@ int main(int argc, char **argv) {
   sprintf(qrytxt_path, "%s/%s-%s.txt", out_dir, geo_name, qry_name);
 
   svg_t *qrysvg = svg_init(qrysvg_path);
-  svg_write_blocks(qrysvg, blocks);
 
+  svg_write_blocks(qrysvg, blocks);
   qry_processing(full_qrypath, qrytxt_path, qrysvg, people, blocks, addresses);
 
   svg_close(qrysvg);

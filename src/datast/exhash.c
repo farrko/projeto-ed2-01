@@ -252,7 +252,6 @@ void exh_insert(exhash_t *exh, const char *key, void *data) {
       exh_bucket_t *split_bucket = exh_create_bucket(exh, new_local_depth);
       bucket->local_depth = new_local_depth;
 
-      // redistribui as entradas com base no bit discriminante
       for (uint16_t i = 0; i < exh->bucket_size; i++) {
         if (!bucket->entries[i]->occupied) continue;
 
@@ -268,8 +267,7 @@ void exh_insert(exhash_t *exh, const char *key, void *data) {
         }
       }
 
-      // atualiza TODOS os índices da tabela que apontavam para o bucket original
-      size_t table_size = (size_t)1 << exh->global_depth;
+      size_t table_size = (size_t) 1 << exh->global_depth;
       for (size_t i = 0; i < table_size; i++) {
         if (exh->buckets[i] == bucket->bucket_pos && (i & discriminant_bit)) {
           exh->buckets[i] = split_bucket->bucket_pos;
@@ -375,10 +373,10 @@ void *exh_remove(exhash_t *exh, const char *key) {
 
     exh->entries_amount--;
 
-    exh_update_bucket(exh, bucket);
     break;
   }
 
+  exh_update_bucket(exh, bucket);
   exh_destroy_bucket(exh, bucket);
 
   return buf;
