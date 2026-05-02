@@ -432,6 +432,7 @@ void *exh_remove(exhash_t *exh, const char *key) {
 void exh_destroy(exhash_t *exh) {
   fclose(exh->headerfile);
   fclose(exh->hashfile);
+  fclose(exh->descfile);
   free(exh->buckets);
   free(exh);
 }
