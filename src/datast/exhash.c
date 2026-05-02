@@ -218,6 +218,10 @@ exhash_t *exh_load(const char *path) {
   char *hfpath = r_strcat(exh->path, ".hf");
   exh->hashfile = fopen(hfpath, "r+b");
   free(hfpath);
+
+  char *hfdpath = r_strcat(exh->path, ".hfd");
+  exh->descfile = fopen(hfdpath, "r+b");
+  free(hfdpath);
   
   fseek(exh->headerfile, 0, SEEK_END);
   fseek(exh->headerfile, 0, SEEK_SET);
