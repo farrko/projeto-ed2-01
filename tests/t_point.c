@@ -59,9 +59,18 @@ void test_conversao_cartesian_para_polar_e_vice_versa(void) {
 
 int main(void) {
   UNITY_BEGIN();
+
+  // point_init e getters
   RUN_TEST(test_point_init_e_getters_cartesianos);
+
+  // point setters
   RUN_TEST(test_point_setters_cartesianos);
+
+  // polar_init e getters
   RUN_TEST(test_polar_init_e_getters);
+
+  // troca entre cartesiano e polar
   RUN_TEST(test_conversao_cartesian_para_polar_e_vice_versa);
+
   return UNITY_END();
 }

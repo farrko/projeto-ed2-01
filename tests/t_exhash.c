@@ -465,19 +465,22 @@ void test_data_size_pequeno_insercao_e_recuperacao(void) {
   remove_files("./tmp_tiny");
 }
 
-void test_insert_duplicado_adiciona_segunda_entrada(void) {
+void test_insert_duplicado_nao_adiciona_segunda_entrada(void) {
   exhash_t *exh = exh_init(4, sizeof(record_t), "./tmp_dup");
 
   record_t r1 = make_record(1, "First",  1.0f);
   record_t r2 = make_record(2, "Second", 2.0f);
 
-  exh_insert(exh, "dup_key", &r1);
-  exh_insert(exh, "dup_key", &r2);
+  bool ins_res1 = exh_insert(exh, "dup_key", &r1);
+  bool ins_res2 = exh_insert(exh, "dup_key", &r2);
 
-  TEST_ASSERT_EQUAL_INT(2, exh_entries_amount(exh));
+  TEST_ASSERT_TRUE(ins_res1);
+  TEST_ASSERT_FALSE(ins_res2);
+  TEST_ASSERT_EQUAL_INT(1, exh_entries_amount(exh));
 
   record_t *got = exh_get(exh, "dup_key");
   TEST_ASSERT_NOT_NULL(got);
+  TEST_ASSERT_EQUAL_MEMORY(got, &r1, sizeof(record_t));
   free(got);
 
   exh_destroy(exh);
@@ -487,36 +490,45 @@ void test_insert_duplicado_adiciona_segunda_entrada(void) {
 int main(void) {
   UNITY_BEGIN();
 
+  // criação
   RUN_TEST(test_init_retorna_ponteiro_nao_nulo);
   RUN_TEST(test_init_comeca_com_zero_entradas);
 
+  // exh_get e exh_insert
   RUN_TEST(test_get_retorna_dado_inserido);
   RUN_TEST(test_get_chave_inexistente_retorna_null);
   RUN_TEST(test_multiplas_insercoes_recuperadas_corretamente);
 
+  // exh_entries_amount
   RUN_TEST(test_entries_amount_incrementa_apos_insercao);
   RUN_TEST(test_entries_amount_decrementa_apos_remocao);
 
+  // exh_remove
   RUN_TEST(test_remove_retorna_dado_correto);
   RUN_TEST(test_get_apos_remocao_retorna_null);
   RUN_TEST(test_remove_chave_inexistente_retorna_null);
   RUN_TEST(test_remove_parcial_preserva_demais_entradas);
 
+  // exh_get_all
   RUN_TEST(test_get_all_retorna_todas_as_entradas);
   RUN_TEST(test_get_all_apos_remocao_nao_inclui_removido);
 
+  // exh_load
   RUN_TEST(test_load_recupera_dados_apos_destroy);
   RUN_TEST(test_load_preserva_entries_amount);
   RUN_TEST(test_load_chave_inexistente_apos_reload);
 
+  // inserção e remoção múltipla
   RUN_TEST(test_estresse_100_insercoes_e_buscas);
   RUN_TEST(test_estresse_insercao_remocao_alternada);
   RUN_TEST(test_estresse_bucket_size_1_forca_muitos_splits);
 
+  // data sizes diferentes
   RUN_TEST(test_data_size_grande_insercao_e_recuperacao);
   RUN_TEST(test_data_size_pequeno_insercao_e_recuperacao);
 
-  RUN_TEST(test_insert_duplicado_adiciona_segunda_entrada);
+  // key duplicada
+  RUN_TEST(test_insert_duplicado_nao_adiciona_segunda_entrada);
 
   return UNITY_END();
 }

@@ -48,8 +48,14 @@ void test_circle_setters_atualizam_valores(void) {
 
 int main(void) {
   UNITY_BEGIN();
+
+  // criação
   RUN_TEST(test_circle_init_retorna_ponteiro_nao_nulo);
+
+  // getters
   RUN_TEST(test_circle_getters_retornam_valores_iniciais);
+
+  // setters
   RUN_TEST(test_circle_setters_atualizam_valores);
   return UNITY_END();
 }

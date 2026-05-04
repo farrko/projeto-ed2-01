@@ -237,7 +237,7 @@ exhash_t *exh_load(const char *path) {
   return exh;
 }
 
-void exh_insert(exhash_t *exh, const char *key, void *data) {
+bool exh_insert(exhash_t *exh, const char *key, void *data) {
   fprintf(exh->descfile, "\n\n--- INSERÇÃO DE DADOS ---\n");
 
   uint64_t nkey = calculate_numerical_key(key);
@@ -246,6 +246,10 @@ void exh_insert(exhash_t *exh, const char *key, void *data) {
   uint32_t bucket_pos = exh->buckets[hash];
 
   exh_bucket_t *bucket = exh_load_bucket(exh, bucket_pos);
+
+  for (size_t i = 0; i < bucket->occupied_entries; i++) {
+    if (bucket->entries[i]->key == nkey) return false;
+  }
 
   if (bucket->occupied_entries < exh->bucket_size) {
     for (uint16_t i = 0; i < exh->bucket_size; i++) {
@@ -272,7 +276,7 @@ void exh_insert(exhash_t *exh, const char *key, void *data) {
       exh_update_bucket(exh, bucket);
       exh_destroy_bucket(exh, bucket);
 
-      return;
+      return true;
     }
   } else {
     if (bucket->local_depth < exh->global_depth) {
@@ -322,6 +326,8 @@ void exh_insert(exhash_t *exh, const char *key, void *data) {
       return exh_insert(exh, key, data);
     }
   }
+
+  return false;
 }
 
 void *exh_get(exhash_t *exh, const char *key) {

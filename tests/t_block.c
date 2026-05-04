@@ -39,9 +39,18 @@ void test_block_setters_atualizam_dimensoes_e_coordenadas(void) {
 
 int main(void) {
   UNITY_BEGIN();
+
+  // sizeof
   RUN_TEST(test_block_sizeof_deve_ser_maior_que_zero);
+
+  // criação
   RUN_TEST(test_block_init_retorna_ponteiro_nao_nulo);
+
+  // getters
   RUN_TEST(test_block_getters_retornam_valores_iniciais_corretos);
+
+  // setters
   RUN_TEST(test_block_setters_atualizam_dimensoes_e_coordenadas);
+
   return UNITY_END();
 }

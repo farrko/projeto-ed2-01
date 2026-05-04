@@ -53,7 +53,12 @@ void test_text_setters(void) {
 
 int main(void) {
   UNITY_BEGIN();
+
+  // init e getters
   RUN_TEST(test_text_init_e_getters);
+
+  // setters
   RUN_TEST(test_text_setters);
+
   return UNITY_END();
 }

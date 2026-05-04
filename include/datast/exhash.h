@@ -2,6 +2,7 @@
 #define EXHASH_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 /*
  *  EXTENDIBLE HASHING
@@ -42,8 +43,10 @@ exhash_t *exh_load(const char *path);
  * @param    exh     Ponteiro para a tabela de hashing.
  * @param    key     Chave numérica para indexação.
  * @param    data    Ponteiro para os dados a serem armazenados.
+ *
+ * @return   "true" para caso tenha sido inserido, "false" caso não tenha sido inserido (key duplicada).
  */
-void exh_insert(exhash_t *exh, const char *key, void *data);
+bool exh_insert(exhash_t *exh, const char *key, void *data);
 
 /** @brief    Recupera um dado associado a uma chave.
  *

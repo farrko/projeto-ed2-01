@@ -44,9 +44,18 @@ void test_ads_setters_atualizam_valores_corretamente(void) {
 
 int main(void) {
   UNITY_BEGIN();
+
+  // sizeof
   RUN_TEST(test_ads_sizeof_deve_ser_maior_que_zero);
+
+  // criação
   RUN_TEST(test_ads_init_retorna_ponteiro_nao_nulo);
+
+  // getters
   RUN_TEST(test_ads_getters_retornam_valores_iniciais_corretos);
+
+  // setters
   RUN_TEST(test_ads_setters_atualizam_valores_corretamente);
+
   return UNITY_END();
 }

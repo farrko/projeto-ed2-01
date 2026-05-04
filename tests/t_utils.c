@@ -142,6 +142,7 @@ void test_strnlen_string_com_espacos(void) {
 int main(void) {
   UNITY_BEGIN();
 
+  // rstrcat
   RUN_TEST(test_rstrcat_concatena_duas_strings_simples);
   RUN_TEST(test_rstrcat_string_vazia_esquerda);
   RUN_TEST(test_rstrcat_string_vazia_direita);
@@ -152,6 +153,7 @@ int main(void) {
   RUN_TEST(test_rstrcat_preserva_conteudo_das_strings_originais);
   RUN_TEST(test_rstrcat_com_extensao_de_arquivo);
 
+  // strnlen
   RUN_TEST(test_strnlen_string_normal_dentro_do_limite);
   RUN_TEST(test_strnlen_limite_exatamente_igual_ao_comprimento);
   RUN_TEST(test_strnlen_limite_menor_que_comprimento_real);

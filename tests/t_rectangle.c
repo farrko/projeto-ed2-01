@@ -53,8 +53,15 @@ void test_rect_setters_atualizam_valores(void) {
 
 int main(void) {
   UNITY_BEGIN();
+
+  // criação
   RUN_TEST(test_rect_init_retorna_ponteiro_nao_nulo);
+
+  // getters
   RUN_TEST(test_rect_getters_retornam_valores_iniciais);
+
+  // setters
   RUN_TEST(test_rect_setters_atualizam_valores);
+
   return UNITY_END();
 }
