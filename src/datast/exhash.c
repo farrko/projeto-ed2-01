@@ -248,7 +248,10 @@ bool exh_insert(exhash_t *exh, const char *key, void *data) {
   exh_bucket_t *bucket = exh_load_bucket(exh, bucket_pos);
 
   for (size_t i = 0; i < bucket->occupied_entries; i++) {
-    if (bucket->entries[i]->key == nkey) return false;
+    if (bucket->entries[i]->key != nkey) continue;
+
+    fprintf(exh->descfile, "\t- Key \"%s\" já presente no registro", key);
+    return false;
   }
 
   if (bucket->occupied_entries < exh->bucket_size) {
