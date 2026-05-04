@@ -4,6 +4,7 @@
 #include "shapes/circle.h"
 #include "shapes/rectangle.h"
 #include "shapes/text.h"
+#include "datast/exhash.h"
 
 /*
  *  SVG
@@ -60,5 +61,7 @@ void svg_write_rectangle(svg_t *svg, rectangle_t *rect);
   * @param    text      A forma de texto a ser escrita.
   */
 void svg_write_text(svg_t *svg, text_t *text);
+
+void svg_write_blocks(svg_t *svg, exhash_t *blocks);
 
 #endif

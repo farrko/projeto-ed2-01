@@ -10,7 +10,6 @@
 #include "objects/block.h"
 #include "objects/people.h"
 #include "objects/address.h"
-#include "shapes/rectangle.h"
 
 static char *extract_basename(const char *filepath) {
   const char *slash = strrchr(filepath, '/');
@@ -24,21 +23,6 @@ static char *extract_basename(const char *filepath) {
   name[len] = '\0';
 
   return name;
-}
-
-static void svg_write_blocks(svg_t *svg, exhash_t *blocks) {
-  uint16_t n_blocks = exh_entries_amount(blocks);
-  uint8_t *block_list = exh_get_all(blocks);
-
-  for (uint16_t i = 0; i < n_blocks; i++) {
-    block_t *b = (block_t *)(block_list + i * block_sizeof());
-
-    rectangle_t *rect = rect_init(i, block_get_x(b), block_get_y(b), block_get_width(b), block_get_height(b), block_get_color(b), block_get_border_color(b), block_get_border_width(b));
-    svg_write_rectangle(svg, rect);
-    rect_destroy(rect);
-  }
-
-  free(block_list);
 }
 
 int main(int argc, char **argv) {
@@ -128,7 +112,6 @@ int main(int argc, char **argv) {
 
   svg_t *qrysvg = svg_init(qrysvg_path);
 
-  svg_write_blocks(qrysvg, blocks);
   qry_processing(full_qrypath, qrytxt_path, qrysvg, people, blocks, addresses);
 
   svg_close(qrysvg);

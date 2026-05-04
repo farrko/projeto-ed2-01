@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "files/svg.h"
-#include "shapes/rectangle.h"
+#include "objects/block.h"
 
 struct svg_t {
   FILE *svgfile;
@@ -60,4 +60,19 @@ void svg_write_text(svg_t *svg, text_t *text) {
   fprintf(svg->svgfile, "<text id=\"%zu\" x=\"%f\" y=\"%f\" text-anchor=\"%s\" fill=\"%s\" stroke=\"%s\" font-family=\"%s\" font-weight=\"%s\" font-size=\"%s\" fill-opacity=\"0.5\">\n", text_get_id(text), text_get_x(text), text_get_y(text), text_get_anchor(text), text_get_color(text), text_get_border_color(text), text_get_ffam(text), text_get_fweight(text), text_get_fsize(text));
   fprintf(svg->svgfile, "%s\n", text_get_content(text));
   fprintf(svg->svgfile, "</text>\n");
+}
+
+void svg_write_blocks(svg_t *svg, exhash_t *blocks) {
+  uint16_t n_blocks = exh_entries_amount(blocks);
+  uint8_t *block_list = exh_get_all(blocks);
+
+  for (uint16_t i = 0; i < n_blocks; i++) {
+    block_t *b = (block_t *)(block_list + i * block_sizeof());
+
+    rectangle_t *rect = rect_init(i, block_get_x(b), block_get_y(b), block_get_width(b), block_get_height(b), block_get_color(b), block_get_border_color(b), block_get_border_width(b));
+    svg_write_rectangle(svg, rect);
+    rect_destroy(rect);
+  }
+
+  free(block_list);
 }

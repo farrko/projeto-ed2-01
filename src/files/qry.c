@@ -6,6 +6,8 @@
 #include "objects/people.h"
 #include "shapes/text.h"
 #include "shapes/point.h"
+#include "shapes/shapes.h"
+#include "datast/linkedlist.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -45,15 +47,14 @@ point_t *calc_address_pos(address_t *ads, block_t *block) {
   return point_init(x, y);
 }
 
-void command_rq(char cep[16], exhash_t *blocks, exhash_t *addresses, exhash_t *people, svg_t *svg, FILE *txt) {
+void command_rq(char cep[16], exhash_t *blocks, exhash_t *addresses, exhash_t *people, FILE *txt, llist_t *added_elements) {
   fprintf(txt, "\n\n--- COMANDO RQ --- argumentos: %s --- \n\n", cep);
 
   block_t *block = exh_remove(blocks, cep);
   if (block == NULL) return;
 
   text_t *x = text_init(0, block_get_x(block), block_get_y(block), "start", "#880808", "#000000", "sans-serif", "normal", "medium", "X");
-  svg_write_text(svg, x);
-  text_destroy(x);
+  llist_insertat_start(added_elements, shape_as_node(shape_init(TEXT, x)));
 
   size_t ads_length = exh_entries_amount(addresses);
   uint8_t *ads_list = exh_get_all(addresses);
@@ -76,7 +77,7 @@ void command_rq(char cep[16], exhash_t *blocks, exhash_t *addresses, exhash_t *p
   free(ads_list);
 }
 
-void command_pq(char cep[16], exhash_t *blocks, exhash_t *addresses, svg_t *svg, FILE *txt) {
+void command_pq(char cep[16], exhash_t *blocks, exhash_t *addresses, FILE *txt, llist_t *added_elements) {
   fprintf(txt, "\n\n--- COMANDO PQ --- argumentos: %s ---\n\n", cep);
 
   block_t *block = exh_get(blocks, cep);
@@ -137,28 +138,23 @@ void command_pq(char cep[16], exhash_t *blocks, exhash_t *addresses, svg_t *svg,
 
   snprintf(buf, sizeof(buf), "%d", count_n);
   text_t *text_n = text_init(0, bx + bw / 2, by, "middle", "#000000", "#000000", "sans-serif", "normal", "10px", buf);
-  svg_write_text(svg, text_n);
-  text_destroy(text_n);
+  llist_insertat_start(added_elements, shape_as_node(shape_init(TEXT, text_n)));
 
   snprintf(buf, sizeof(buf), "%d", count_s);
   text_t *text_s = text_init(0, bx + bw / 2, by + bh, "middle", "#000000", "#000000", "sans-serif", "normal", "10px", buf);
-  svg_write_text(svg, text_s);
-  text_destroy(text_s);
+  llist_insertat_start(added_elements, shape_as_node(shape_init(TEXT, text_s)));
 
   snprintf(buf, sizeof(buf), "%d", count_l);
   text_t *text_l = text_init(0, bx, by + bh / 2, "start", "#000000", "#000000", "sans-serif", "normal", "10px", buf);
-  svg_write_text(svg, text_l);
-  text_destroy(text_l);
+  llist_insertat_start(added_elements, shape_as_node(shape_init(TEXT, text_l)));
 
   snprintf(buf, sizeof(buf), "%d", count_o);
   text_t *text_o = text_init(0, bx + bw, by + bh / 2, "end", "#000000", "#000000", "sans-serif", "normal", "10px", buf);
-  svg_write_text(svg, text_o);
-  text_destroy(text_o);
+  llist_insertat_start(added_elements, shape_as_node(shape_init(TEXT, text_o)));
 
   snprintf(buf, sizeof(buf), "%d", total);
   text_t *text_total = text_init(0, bx + bw / 2, by + bh / 2, "middle", "#000000", "#000000", "sans-serif", "bold", "12px", buf);
-  svg_write_text(svg, text_total);
-  text_destroy(text_total);
+  llist_insertat_start(added_elements, shape_as_node(shape_init(TEXT, text_total)));
 
   free(address_list);
   free(block);
@@ -268,7 +264,7 @@ void command_nasc(char cpf[16], char name[32], char surname[32], char gender, ch
   people_destroy(person);
 }
 
-void command_rip(char cpf[16], exhash_t *people, exhash_t *addresses, exhash_t *blocks, svg_t *svg, FILE *txt) {
+void command_rip(char cpf[16], exhash_t *people, exhash_t *addresses, exhash_t *blocks, FILE *txt, llist_t *added_elements) {
   fprintf(txt, "\n\n--- COMANDO RIP --- argumentos: %s ---\n\n", cpf);
 
   people_t *person = exh_remove(people, cpf);
@@ -294,8 +290,7 @@ void command_rip(char cpf[16], exhash_t *people, exhash_t *addresses, exhash_t *
       double cy = point_get_y(pos);
 
       text_t *cross = text_init(0, cx, cy, "middle", "#FF0000", "#FF0000", "sans-serif", "bold", "12px", "+");
-      svg_write_text(svg, cross);
-      text_destroy(cross);
+      llist_insertat_start(added_elements, shape_as_node(shape_init(TEXT, cross)));
 
       point_destroy(pos);
       block_destroy(block);
@@ -309,7 +304,7 @@ void command_rip(char cpf[16], exhash_t *people, exhash_t *addresses, exhash_t *
   people_destroy(person);
 }
 
-void command_mud(char cpf[16], char cep[16], char face, uint16_t num, char complement[32], exhash_t *people, exhash_t *addresses, exhash_t *blocks, svg_t *svg, FILE *txt) {
+void command_mud(char cpf[16], char cep[16], char face, uint16_t num, char complement[32], exhash_t *people, exhash_t *addresses, exhash_t *blocks, FILE *txt, llist_t *added_elements) {
   fprintf(txt, "\n\n--- COMANDO MUD --- argumentos: %s %s %c %u %s ---\n\n", cpf, cep, face, num, complement);
 
   people_t *person = exh_get(people, cpf);
@@ -333,12 +328,10 @@ void command_mud(char cpf[16], char cep[16], char face, uint16_t num, char compl
     double half = 5.0;
 
     rectangle_t *rect = rect_init(0, cx - half, cy - half, half * 2, half * 2, "#FF0000", "#FF0000", "2px");
-    svg_write_rectangle(svg, rect);
-    rect_destroy(rect);
+    llist_insertat_start(added_elements, shape_as_node(shape_init(RECTANGLE, rect)));
 
     text_t *label = text_init(0, cx, cy + half, "middle", "#FFFFFF", "#000000", "sans-serif", "normal", "8px", cpf);
-    svg_write_text(svg, label);
-    text_destroy(label);
+    llist_insertat_start(added_elements, shape_as_node(shape_init(TEXT, label)));
 
     point_destroy(pos);
     block_destroy(block);
@@ -348,7 +341,7 @@ void command_mud(char cpf[16], char cep[16], char face, uint16_t num, char compl
   people_destroy(person);
 }
 
-void command_dspj(char cpf[16], exhash_t *people, exhash_t *addresses, exhash_t *blocks, svg_t *svg, FILE *txt) {
+void command_dspj(char cpf[16], exhash_t *people, exhash_t *addresses, exhash_t *blocks, FILE *txt, llist_t *added_elements) {
   fprintf(txt, "\n\n--- COMANDO DSPJ --- argumentos: %s ---\n\n", cpf);
 
   people_t *person = exh_get(people, cpf);
@@ -375,8 +368,7 @@ void command_dspj(char cpf[16], exhash_t *people, exhash_t *addresses, exhash_t 
     point_t *pos = calc_address_pos(ads, block);
 
     circle_t *dot = circle_init(0, point_get_x(pos), point_get_y(pos), 5.0, "#000000", "#000000");
-    svg_write_circle(svg, dot);
-    circle_destroy(dot);
+    llist_insertat_start(added_elements, shape_as_node(shape_init(CIRCLE, dot)));
 
     point_destroy(pos);
     block_destroy(block);
@@ -400,50 +392,71 @@ void qry_processing(const char *qrypath, const char *txtpath, svg_t *svg, exhash
     exit(1);
   }
 
+  llist_t *added_elements = llist_init();
+
   char buf[256];
   while (fgets(buf, 256, qry)) {
     if (strncmp(buf, "rq", 2) == 0) {
       char cep[16];
-      sscanf(buf, "%*s %s", cep);
-      command_rq(cep, blocks, addresses, people, svg, txt);
 
+      sscanf(buf, "%*s %s", cep);
+      command_rq(cep, blocks, addresses, people, txt, added_elements);
     } else if (strncmp(buf, "pq", 2) == 0) {
       char cep[16];
-      sscanf(buf, "%*s %s", cep);
-      command_pq(cep, blocks, addresses, svg, txt);
 
+      sscanf(buf, "%*s %s", cep);
+      command_pq(cep, blocks, addresses, txt, added_elements);
     } else if (strncmp(buf, "censo", 5) == 0) {
       command_censo(people, addresses, txt);
-
     } else if (strncmp(buf, "h?", 2) == 0) {
       char cpf[16];
+
       sscanf(buf, "%*s %s", cpf);
       command_h(cpf, people, addresses, txt);
-
     } else if (strncmp(buf, "nasc", 4) == 0) {
       char cpf[16], name[32], surname[32], dob[11];
       char gender;
+
       sscanf(buf, "%*s %s %s %s %c %s", cpf, name, surname, &gender, dob);
       command_nasc(cpf, name, surname, gender, dob, people, txt);
-
     } else if (strncmp(buf, "rip", 3) == 0) {
       char cpf[16];
-      sscanf(buf, "%*s %s", cpf);
-      command_rip(cpf, people, addresses, blocks, svg, txt);
 
+      sscanf(buf, "%*s %s", cpf);
+      command_rip(cpf, people, addresses, blocks, txt, added_elements);
     } else if (strncmp(buf, "dspj", 4) == 0) {
       char cpf[16];
-      sscanf(buf, "%*s %s", cpf);
-      command_dspj(cpf, people, addresses, blocks, svg, txt);
 
+      sscanf(buf, "%*s %s", cpf);
+      command_dspj(cpf, people, addresses, blocks, txt, added_elements);
     } else if (strncmp(buf, "mud", 3) == 0) {
       char cpf[16], cep[16], complement[32];
       char face;
       uint16_t num;
+
       sscanf(buf, "%*s %s %s %c %" SCNu16 " %s", cpf, cep, &face, &num, complement);
-      command_mud(cpf, cep, face, num, complement, people, addresses, blocks, svg, txt);
+      command_mud(cpf, cep, face, num, complement, people, addresses, blocks, txt, added_elements);
     }
   }
+
+  svg_write_blocks(svg, blocks);
+  size_t llen = llist_get_length(added_elements);
+  for (size_t i = 0; i < llen; i++) {
+    shape_t *shape = node_getvalue(llist_getat_index(added_elements, i));
+    switch (shape_get_type(shape)) {
+      case TEXT:
+        svg_write_text(svg, shape_as_text(shape));
+        break;
+      case RECTANGLE:
+        svg_write_rectangle(svg, shape_as_rectangle(shape));
+        break;
+      case CIRCLE:
+        svg_write_circle(svg, shape_as_circle(shape));
+        break;
+    }
+  }
+
+  llist_destroy(added_elements);
 
   fclose(qry);
   fclose(txt);

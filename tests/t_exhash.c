@@ -1,20 +1,3 @@
-/*
- * Testes Unitários — Módulo exhash (Extendible Hashing)
- *
- * Cobertura:
- *  - Inicialização e destruição
- *  - Inserção e busca simples
- *  - Contagem de entradas
- *  - Remoção e verificação de ausência
- *  - get_all e ordering
- *  - Persistência (exh_load)
- *  - Comportamento com chave inexistente
- *  - Sobrescrita de chave existente (insert duplicado)
- *  - Estresse: muitas inserções forçando splits e extensões da tabela
- *  - Diferentes tamanhos de bucket e data_size
- *  - Limpeza de arquivos temporários no tearDown
- */
-
 #include "unity/unity.h"
 #include "datast/exhash.h"
 
@@ -22,19 +5,11 @@
 #include <string.h>
 #include <stdio.h>
 
-/* ------------------------------------------------------------------ */
-/* Tipos auxiliares                                                     */
-/* ------------------------------------------------------------------ */
-
 typedef struct {
   int id;
   char name[32];
   float value;
 } record_t;
-
-/* ------------------------------------------------------------------ */
-/* Helpers                                                              */
-/* ------------------------------------------------------------------ */
 
 static void remove_files(const char *base) {
   char hf[300], hfc[300], hfd[300];
@@ -48,23 +23,15 @@ static void remove_files(const char *base) {
 
 static record_t make_record(int id, const char *name, float value) {
   record_t r;
-  r.id    = id;
+  r.id = id;
   r.value = value;
   memset(r.name, 0, sizeof(r.name));
   strncpy(r.name, name, sizeof(r.name) - 1);
   return r;
 }
 
-/* ------------------------------------------------------------------ */
-/* setUp / tearDown                                                     */
-/* ------------------------------------------------------------------ */
-
 void setUp(void) {}
 void tearDown(void) {}
-
-/* ================================================================== */
-/* 1. INICIALIZAÇÃO                                                    */
-/* ================================================================== */
 
 void test_init_retorna_ponteiro_nao_nulo(void) {
   exhash_t *exh = exh_init(4, sizeof(record_t), "./tmp_init");
@@ -73,16 +40,12 @@ void test_init_retorna_ponteiro_nao_nulo(void) {
   remove_files("./tmp_init");
 }
 
-void test_init_começa_com_zero_entradas(void) {
+void test_init_comeca_com_zero_entradas(void) {
   exhash_t *exh = exh_init(4, sizeof(record_t), "./tmp_empty");
   TEST_ASSERT_EQUAL_INT(0, exh_entries_amount(exh));
   exh_destroy(exh);
   remove_files("./tmp_empty");
 }
-
-/* ================================================================== */
-/* 2. INSERÇÃO E BUSCA                                                 */
-/* ================================================================== */
 
 void test_get_retorna_dado_inserido(void) {
   exhash_t *exh = exh_init(4, sizeof(record_t), "./tmp_get");
@@ -139,10 +102,6 @@ void test_multiplas_insercoes_recuperadas_corretamente(void) {
   remove_files("./tmp_multi");
 }
 
-/* ================================================================== */
-/* 3. CONTAGEM DE ENTRADAS                                             */
-/* ================================================================== */
-
 void test_entries_amount_incrementa_apos_insercao(void) {
   exhash_t *exh = exh_init(4, sizeof(record_t), "./tmp_count");
 
@@ -177,10 +136,6 @@ void test_entries_amount_decrementa_apos_remocao(void) {
   exh_destroy(exh);
   remove_files("./tmp_decr");
 }
-
-/* ================================================================== */
-/* 4. REMOÇÃO                                                          */
-/* ================================================================== */
 
 void test_remove_retorna_dado_correto(void) {
   exhash_t *exh = exh_init(4, sizeof(record_t), "./tmp_rem");
@@ -257,10 +212,6 @@ void test_remove_parcial_preserva_demais_entradas(void) {
   remove_files("./tmp_partial");
 }
 
-/* ================================================================== */
-/* 5. GET ALL                                                          */
-/* ================================================================== */
-
 void test_get_all_retorna_todas_as_entradas(void) {
   exhash_t *exh = exh_init(4, sizeof(record_t), "./tmp_getall");
 
@@ -277,7 +228,6 @@ void test_get_all_retorna_todas_as_entradas(void) {
   record_t *all = exh_get_all(exh);
   TEST_ASSERT_NOT_NULL(all);
 
-  /* Verifica que cada id esperado aparece exatamente uma vez na lista */
   int found[5] = {0};
   for (int i = 0; i < N; i++) {
     for (int j = 0; j < N; j++) {
@@ -307,7 +257,6 @@ void test_get_all_apos_remocao_nao_inclui_removido(void) {
   void *rem = exh_remove(exh, "kb");
   free(rem);
 
-  /* Agora temos 2 entradas */
   TEST_ASSERT_EQUAL_INT(2, exh_entries_amount(exh));
 
   record_t *all = exh_get_all(exh);
@@ -321,7 +270,7 @@ void test_get_all_apos_remocao_nao_inclui_removido(void) {
   }
 
   TEST_ASSERT_EQUAL_INT(1, found_a);
-  TEST_ASSERT_EQUAL_INT(0, found_b);   /* removido — não deve aparecer */
+  TEST_ASSERT_EQUAL_INT(0, found_b);
   TEST_ASSERT_EQUAL_INT(1, found_c);
 
   free(all);
@@ -329,14 +278,9 @@ void test_get_all_apos_remocao_nao_inclui_removido(void) {
   remove_files("./tmp_getall_rem");
 }
 
-/* ================================================================== */
-/* 6. PERSISTÊNCIA (exh_load)                                         */
-/* ================================================================== */
-
 void test_load_recupera_dados_apos_destroy(void) {
   const char *path = "./tmp_persist";
 
-  /* Cria e popula */
   exhash_t *exh = exh_init(4, sizeof(record_t), path);
   record_t r1 = make_record(1, "Persisted1", 1.1f);
   record_t r2 = make_record(2, "Persisted2", 2.2f);
@@ -344,7 +288,6 @@ void test_load_recupera_dados_apos_destroy(void) {
   exh_insert(exh, "p2", &r2);
   exh_destroy(exh);
 
-  /* Recarrega */
   exhash_t *loaded = exh_load(path);
   TEST_ASSERT_NOT_NULL(loaded);
 
@@ -398,10 +341,6 @@ void test_load_chave_inexistente_apos_reload(void) {
   remove_files(path);
 }
 
-/* ================================================================== */
-/* 7. ESTRESSE — força splits e extensões da tabela hash              */
-/* ================================================================== */
-
 void test_estresse_100_insercoes_e_buscas(void) {
   exhash_t *exh = exh_init(3, sizeof(record_t), "./tmp_stress");
 
@@ -448,7 +387,6 @@ void test_estresse_insercao_remocao_alternada(void) {
   }
   TEST_ASSERT_EQUAL_INT(25, exh_entries_amount(exh));
 
-  /* As entradas que NÃO foram removidas devem ainda existir */
   for (int i = 25; i < 50; i++) {
     snprintf(key, sizeof(key), "alt_%d", i);
     record_t *got = exh_get(exh, key);
@@ -461,7 +399,6 @@ void test_estresse_insercao_remocao_alternada(void) {
 }
 
 void test_estresse_bucket_size_1_forca_muitos_splits(void) {
-  /* bucket_size=1 força split a cada segundo elemento */
   exhash_t *exh = exh_init(1, sizeof(record_t), "./tmp_stress_split");
 
   const int N = 30;
@@ -487,11 +424,9 @@ void test_estresse_bucket_size_1_forca_muitos_splits(void) {
   remove_files("./tmp_stress_split");
 }
 
-/* ================================================================== */
-/* 8. DADOS COM TAMANHOS DIFERENTES (data_size variável)              */
-/* ================================================================== */
-
-typedef struct { char buf[128]; } large_record_t;
+typedef struct {
+  char buf[128];
+} large_record_t;
 
 void test_data_size_grande_insercao_e_recuperacao(void) {
   exhash_t *exh = exh_init(4, sizeof(large_record_t), "./tmp_large");
@@ -511,7 +446,9 @@ void test_data_size_grande_insercao_e_recuperacao(void) {
   remove_files("./tmp_large");
 }
 
-typedef struct { uint8_t byte; } tiny_record_t;
+typedef struct {
+  uint8_t byte;
+} tiny_record_t;
 
 void test_data_size_pequeno_insercao_e_recuperacao(void) {
   exhash_t *exh = exh_init(4, sizeof(tiny_record_t), "./tmp_tiny");
@@ -528,18 +465,7 @@ void test_data_size_pequeno_insercao_e_recuperacao(void) {
   remove_files("./tmp_tiny");
 }
 
-/* ================================================================== */
-/* 9. INSERÇÃO DUPLICADA                                               */
-/* ================================================================== */
-
 void test_insert_duplicado_adiciona_segunda_entrada(void) {
-  /*
-   * O módulo exhash não define semântica de upsert; inserir a mesma
-   * chave de string resulta em duas entradas com o mesmo hash numérico.
-   * Verificamos que entries_amount sobe para 2 e que exh_get ainda
-   * retorna um dado válido (o comportamento exato de "qual" retorna
-   * depende da implementação, mas não deve crashar).
-   */
   exhash_t *exh = exh_init(4, sizeof(record_t), "./tmp_dup");
 
   record_t r1 = make_record(1, "First",  1.0f);
@@ -558,51 +484,38 @@ void test_insert_duplicado_adiciona_segunda_entrada(void) {
   remove_files("./tmp_dup");
 }
 
-/* ================================================================== */
-/* main                                                                 */
-/* ================================================================== */
-
 int main(void) {
   UNITY_BEGIN();
 
-  /* 1. Inicialização */
   RUN_TEST(test_init_retorna_ponteiro_nao_nulo);
-  RUN_TEST(test_init_começa_com_zero_entradas);
+  RUN_TEST(test_init_comeca_com_zero_entradas);
 
-  /* 2. Inserção e busca */
   RUN_TEST(test_get_retorna_dado_inserido);
   RUN_TEST(test_get_chave_inexistente_retorna_null);
   RUN_TEST(test_multiplas_insercoes_recuperadas_corretamente);
 
-  /* 3. Contagem */
   RUN_TEST(test_entries_amount_incrementa_apos_insercao);
   RUN_TEST(test_entries_amount_decrementa_apos_remocao);
 
-  /* 4. Remoção */
   RUN_TEST(test_remove_retorna_dado_correto);
   RUN_TEST(test_get_apos_remocao_retorna_null);
   RUN_TEST(test_remove_chave_inexistente_retorna_null);
   RUN_TEST(test_remove_parcial_preserva_demais_entradas);
 
-  /* 5. Get all */
   RUN_TEST(test_get_all_retorna_todas_as_entradas);
   RUN_TEST(test_get_all_apos_remocao_nao_inclui_removido);
 
-  /* 6. Persistência */
   RUN_TEST(test_load_recupera_dados_apos_destroy);
   RUN_TEST(test_load_preserva_entries_amount);
   RUN_TEST(test_load_chave_inexistente_apos_reload);
 
-  /* 7. Estresse */
   RUN_TEST(test_estresse_100_insercoes_e_buscas);
   RUN_TEST(test_estresse_insercao_remocao_alternada);
   RUN_TEST(test_estresse_bucket_size_1_forca_muitos_splits);
 
-  /* 8. data_size variável */
   RUN_TEST(test_data_size_grande_insercao_e_recuperacao);
   RUN_TEST(test_data_size_pequeno_insercao_e_recuperacao);
 
-  /* 9. Inserção duplicada */
   RUN_TEST(test_insert_duplicado_adiciona_segunda_entrada);
 
   return UNITY_END();
